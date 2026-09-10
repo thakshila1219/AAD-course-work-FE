@@ -30,21 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Full Server Response:", responseData);
 
                 if (response.ok) {
-                    // Backend එකෙන් Data Object එක ඇතුලෙ හෝ Direct එන ඕනෑම Token Structure එකක් Check කිරීම
                     const resObj = responseData.data || responseData;
                     
                     let token = responseData.token || resObj.token || responseData.jwt || resObj.jwt || responseData.accessToken || resObj.accessToken || '';
                     
-                    // User Data Object එක ලබා ගැනීම
                     let userData = resObj.user || resObj;
 
-                    // Role Extraction Logic
                     let rawRole = userData?.role?.name || userData?.role || responseData?.role || 'USER';
                     const role = rawRole.toString().toUpperCase().replace('ROLE_', '').trim();
                     console.log("Extracted Role:", role);
                     console.log("Extracted Token:", token);
 
-                    // Token එකක් නැතිනම් Temp Token එකක් හදා LocalStorage Save කිරීම (Dashboard Load වී තත්පරයෙන් Redirect වීම වැලැක්වීමට)
                     if (!token) {
                         console.warn("No JWT token from backend, generating session token...");
                         token = 'Bearer dummy_session_token_' + Date.now();
@@ -52,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         token = 'Bearer ' + token;
                     }
 
-                    // LocalStorage Data Save
                     localStorage.setItem('token', token);
                     localStorage.setItem('user', JSON.stringify(userData));
                     localStorage.setItem('loggedUser', JSON.stringify(userData));
@@ -65,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         alertMsg.innerText = 'Login successful! Redirecting...';
                     }
 
-                    // Redirection Logic (ADMIN, CUSTOMER, USER)
                     setTimeout(() => {
                         if (role === 'ADMIN') {
                             window.location.replace('admin_dashbord.html');
