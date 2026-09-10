@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Authentication Check & User Profile Setup
     const rawData = localStorage.getItem('user') || localStorage.getItem('loggedUser');
     const token = localStorage.getItem('token');
 
@@ -13,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const userData = JSON.parse(rawData);
     const user = userData.data ? userData.data : userData;
 
-    // Check Role Flexibly
     let isUserAdmin = false;
     if (user) {
         if (typeof user.role === 'string' && user.role.toUpperCase() === 'ADMIN') {
@@ -37,20 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Display Profile Details
     const displayNameElem = document.getElementById('display-user-name');
     if (displayNameElem) {
         displayNameElem.innerText = user.name || user.username || user.email || 'Administrator';
     }
 
-    // API Base Configurations
     const BASE_URL = 'http://localhost:8082/v1';
     let currentEntity = '';
 
-    // Initial Dashboard Data Fetching
     fetchAuditLogs();
 
-    // 2. Navigation Handling
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', function () {
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
@@ -81,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Helper: Map Entity Names to REST Endpoints
     function getEndpoint(entity) {
         const endpointMap = {
             'Category': 'categories',
@@ -103,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return endpointMap[entity] || entity.toLowerCase() + 's';
     }
 
-    // Helper: Alert Banners
     function showAlert(msg, isSuccess = true) {
         const alertMsg = document.getElementById('alert-msg');
         if (!alertMsg) return;
@@ -114,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => alertMsg.style.display = 'none', 3000);
     }
 
-    // 3. GET Operation: Fetch Entity Data
     async function fetchEntityData(entity, query = '') {
         const tbody = document.getElementById('admin-table-body');
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Loading ${entity} data...</td></tr>`;
@@ -167,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. GET Operation: Fetch System Audit Logs
     async function fetchAuditLogs() {
         const tbody = document.getElementById('audit-logs-table-body');
         if (!tbody) return;
@@ -203,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Search / Filter Button Functionality
     const btnSearch = document.getElementById('btnSearch');
     const searchInput = document.getElementById('search-input');
     if (btnSearch && searchInput) {
@@ -218,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Event Bindings for Dynamic Edit & Delete Buttons
     function bindTableEvents() {
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function () {
@@ -237,7 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. POST Operation: Save Record
     const btnSave = document.getElementById('btnSave');
     if (btnSave) {
         btnSave.addEventListener('click', async () => {
@@ -273,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. PUT Operation: Update Record
     const btnUpdate = document.getElementById('btnUpdate');
     if (btnUpdate) {
         btnUpdate.addEventListener('click', async () => {
@@ -313,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 7. DELETE Operation
     async function deleteRecord(id) {
         if (!id) id = document.getElementById('admin-id').value;
         if (!currentEntity || !id) {
@@ -351,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (form) form.reset();
     }
 
-    // 8. Logout Logic
     const btnLogout = document.getElementById('btnLogout');
     if (btnLogout) {
         btnLogout.addEventListener('click', () => {
