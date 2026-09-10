@@ -1,4 +1,4 @@
-/* Authentication Pages Specific Styles */
+/* Authentication Pages  Styles */
 
 .auth-container {
     min-height: 100vh;
@@ -100,7 +100,7 @@
     font-weight: 600;
     cursor: pointer;
     border: none;
-    background: #6366f1; /* Primary color */
+    background: #6366f1; 
     color: white;
     transition: 0.3s;
 }
