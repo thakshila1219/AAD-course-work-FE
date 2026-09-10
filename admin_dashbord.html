@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTManager - Admin Control Panel</title>
+    <!-- Modern Font & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        
+        <!-- Admin Full Access Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>REST<span class="text-primary">Manager</span></h2>
+                <span class="badge badge-admin"><i class="fa-solid fa-shield-halved"></i> Admin Portal</span>
+            </div>
+
+            <div class="sidebar-menu-wrapper">
+                <span class="menu-label">Overview</span>
+                <ul class="nav-links">
+                    <li class="nav-item active" data-section="admin-dashboard">
+                        <i class="fa-solid fa-chart-line"></i> Analytics & Overview
+                    </li>
+                </ul>
+
+                <span class="menu-label">Menu & Dining</span>
+                <ul class="nav-links">
+                    <li class="nav-item" data-entity="Category"><i class="fa-solid fa-layer-group"></i> Categories</li>
+                    <li class="nav-item" data-entity="MenuItem"><i class="fa-solid fa-utensils"></i> Menu Items</li>
+                    <li class="nav-item" data-entity="DiningTable"><i class="fa-solid fa-chair"></i> Dining Tables</li>
+                    <li class="nav-item" data-entity="Reservation"><i class="fa-solid fa-calendar-check"></i> Reservations</li>
+                    <li class="nav-item" data-entity="RecipeItem"><i class="fa-solid fa-book-open"></i> Recipe Items</li>
+                </ul>
+
+                <span class="menu-label">Sales & Finance</span>
+                <ul class="nav-links">
+                    <li class="nav-item" data-entity="Order"><i class="fa-solid fa-cart-shopping"></i> Orders</li>
+                    <li class="nav-item" data-entity="OrderDetail"><i class="fa-solid fa-list-check"></i> Order Details</li>
+                    <li class="nav-item" data-entity="Payment"><i class="fa-solid fa-credit-card"></i> Payments</li>
+                    <li class="nav-item" data-entity="DiscountCoupon"><i class="fa-solid fa-ticket"></i> Discount Coupons</li>
+                </ul>
+
+                <span class="menu-label">Inventory & Stock</span>
+                <ul class="nav-links">
+                    <li class="nav-item" data-entity="Ingredient"><i class="fa-solid fa-wheat-awn"></i> Ingredients</li>
+                    <li class="nav-item" data-entity="Supplier"><i class="fa-solid fa-truck-field"></i> Suppliers</li>
+                </ul>
+
+                <span class="menu-label">System Administration</span>
+                <ul class="nav-links">
+                    <li class="nav-item" data-entity="User"><i class="fa-solid fa-user-gear"></i> Users Management</li>
+                    <li class="nav-item" data-entity="Role"><i class="fa-solid fa-user-shield"></i> User Roles</li>
+                    <li class="nav-item" data-entity="UserRole"><i class="fa-solid fa-users-rectangle"></i> User-Role Map</li>
+                    <li class="nav-item" data-entity="StaffAssignment"><i class="fa-solid fa-id-badge"></i> Staff Assignments</li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Admin Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Bar Header -->
+            <header class="top-header">
+                <div class="header-titles">
+                    <h1 id="page-title">Admin Dashboard</h1>
+                    <p id="page-subtitle">Full System Control & Entity Management</p>
+                </div>
+                <div class="header-actions">
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Admin Avatar">
+                        <div class="user-info">
+                            <span class="user-name" id="display-user-name">System Administrator</span>
+                            <span class="user-role badge-admin-text">Super Admin</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" id="btnLogout">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notification Alert Message -->
+            <div id="alert-msg" style="display: none; padding: 12px; margin: 15px 20px 0 20px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
+
+            <!-- Dynamic Views Container -->
+            <div class="content-sections">
+                
+                <!-- 1. ADMIN DASHBOARD ANALYTICS OVERVIEW & AUDIT LOGS -->
+                <section id="admin-dashboard" class="section active-section fade-in">
+                    <div class="dashboard-cards">
+                        <div class="card glass-card">
+                            <div class="card-icon icon-blue"><i class="fa-solid fa-sack-dollar"></i></div>
+                            <div class="card-info">
+                                <h3>Total Revenue</h3>
+                                <p id="dash-revenue">Rs. 245,800.00</p>
+                            </div>
+                        </div>
+                        <div class="card glass-card">
+                            <div class="card-icon icon-orange"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="card-info">
+                                <h3>Total Orders</h3>
+                                <p id="dash-orders">128</p>
+                            </div>
+                        </div>
+                        <div class="card glass-card">
+                            <div class="card-icon icon-purple"><i class="fa-solid fa-users-gear"></i></div>
+                            <div class="card-info">
+                                <h3>Active System Users</h3>
+                                <p id="dash-users">15</p>
+                            </div>
+                        </div>
+                        <div class="card glass-card">
+                            <div class="card-icon icon-green"><i class="fa-solid fa-boxes-stacked"></i></div>
+                            <div class="card-info">
+                                <h3>Low Stock Items</h3>
+                                <p id="dash-stock">4 Items</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Audit Logs Panel -->
+                    <div class="table-panel glass-panel" style="margin-top: 25px;">
+                        <h2><i class="fa-solid fa-clock-rotate-left text-primary"></i> Recent System Audit Logs</h2>
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Log ID</th>
+                                    <th>User</th>
+                                    <th>Action / Event</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-logs-table-body">
+                                <tr><td colspan="4" style="text-align:center;">Loading audit logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 2. ADMIN FULL CRUD ENTITY MANAGEMENT SECTION -->
+                <section id="admin-entity-section" class="section fade-in" style="display: none;">
+                    <div class="split-layout">
+                        
+                        <!-- Left Panel: Form -->
+                        <div class="form-panel glass-panel">
+                            <h2 id="entity-form-title"><i class="fa-solid fa-sliders text-primary"></i> Entity Configuration</h2>
+                            <form id="admin-crud-form">
+                                <div class="form-group">
+                                    <label>Record Identifier (ID)</label>
+                                    <input type="text" id="admin-id" placeholder="Auto Generated or ID">
+                                </div>
+                                <div class="form-group">
+                                    <label>Primary Name / Title</label>
+                                    <input type="text" id="admin-name" placeholder="Enter Entity Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Details / Value / Quantity</label>
+                                    <input type="text" id="admin-detail" placeholder="Enter details or price">
+                                </div>
+                                <div class="form-group">
+                                    <label>Status / Access Role</label>
+                                    <select id="admin-status">
+                                        <option value="ACTIVE">ACTIVE</option>
+                                        <option value="INACTIVE">INACTIVE</option>
+                                        <option value="PENDING">PENDING</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" id="btnSave" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save</button>
+                                    <button type="button" id="btnUpdate" class="btn btn-warning"><i class="fa-solid fa-pen"></i> Update</button>
+                                    <button type="button" id="btnDelete" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right Panel: Grid Table with Search -->
+                        <div class="table-panel glass-panel">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h2 id="entity-table-title" style="margin: 0;">System Records Overview</h2>
+                                <!-- Filter/Search Bar -->
+                                <div id="search-container" style="display: flex; gap: 8px;">
+                                    <input type="text" id="search-input" placeholder="Search records..." style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc;">
+                                    <button id="btnSearch" class="btn btn-primary" style="padding: 6px 12px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                            </div>
+
+                            <table class="custom-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name / Details</th>
+                                        <th>Value / Status</th>
+                                        <th>Admin Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-table-body">
+                                    <!-- Dynamic API Data Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

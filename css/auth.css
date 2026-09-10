@@ -1,0 +1,123 @@
+/* Authentication Pages Specific Styles */
+
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    
+    background-image: url('../assets/login.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+    padding-right: 20%; 
+    padding-left: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    max-height: 900px;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    
+    background: rgba(30, 41, 59, 0.1) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(17, 17, 17, 0.827);
+}
+
+.auth-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.auth-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    color: white;
+}
+
+.auth-logo h2 {
+    font-size: 2.2rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+}
+
+.auth-form {
+    text-align: left;
+    color: white;
+}
+
+.auth-form .form-group {
+    margin-bottom: 16px;
+}
+
+.auth-form .form-group label {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.auth-form input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 1.05rem;
+    color: white;
+    transition: all 0.3s ease;
+    box-sizing: border-box; 
+}
+
+.auth-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.auth-form input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+.auth-form .btn {
+    width: 70%;
+    padding: 14px;
+    font-size: 1.1rem;
+    margin-top: 16px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    background: #6366f1; /* Primary color */
+    color: white;
+    transition: 0.3s;
+}
+
+.auth-form .btn:hover {
+    background: #4f46e5;
+    transform: translateY(-2px);
+}
+
+.auth-footer {
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+}
+
+.auth-footer a {
+    color: #818cf8;
+    text-decoration: none;
+    font-weight: 600;
+}

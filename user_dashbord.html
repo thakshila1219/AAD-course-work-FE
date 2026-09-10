@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTManager - User Dashboard</title>
+
+    <!-- Modern Font & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        
+        <!-- User Sidebar Navigation (Admin Layout Structure) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>REST<span class="text-primary">Manager</span></h2>
+                <span class="badge badge-admin"><i class="fa-solid fa-user"></i> User Portal</span>
+            </div>
+
+            <div class="sidebar-menu-wrapper">
+                <span class="menu-label">Main Navigation</span>
+                <ul class="nav-links">
+                    <li class="nav-item active" onclick="showDashboard()">
+                        <i class="fa-solid fa-chart-line"></i> Dashboard Overview
+                    </li>
+                </ul>
+
+                <span class="menu-label">Restaurant Services</span>
+                <ul class="nav-links">
+                    <li class="nav-item" id="btnViewMenu" onclick="showSection('menu-section')">
+                        <i class="fa-solid fa-utensils"></i> Food Menu Catalog
+                    </li>
+                    <li class="nav-item" id="btnViewOrders" onclick="showSection('orders-section')">
+                        <i class="fa-solid fa-cart-shopping"></i> Customer Orders
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- User Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Top Bar Header (Admin Structure) -->
+            <header class="top-header">
+                <div class="header-titles">
+                    <h1 id="userWelcomeMsg">Welcome Back, User!</h1>
+                    <p id="page-subtitle">Manage restaurant food menus, table reservations, and customer orders</p>
+                </div>
+                <div class="header-actions">
+                    <span id="current-time" style="color: #94a3b8; font-size: 14px; margin-right: 10px;"></span>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name=User&background=38bdf8&color=fff" alt="User Avatar">
+                        <div class="user-info">
+                            <span class="user-name" id="display-user">User Account</span>
+                            <span class="user-role badge-admin-text">Customer</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" id="btnLogout" onclick="logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Notification Alert Message -->
+            <div id="alert-msg" style="display: none; padding: 12px; margin: 15px 20px 0 20px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
+
+            <!-- Dynamic Views Container -->
+            <div class="content-sections" style="padding: 20px;">
+                
+                <!-- 1. USER MAIN DASHBOARD VIEW -->
+                <section id="dashboard-section" class="section active-section fade-in main-dashboard-view">
+                    
+                    <!-- Metrics Cards Grid -->
+                    <div class="dashboard-cards">
+                        <div class="card glass-card">
+                            <div class="card-icon icon-orange"><i class="fa-solid fa-receipt"></i></div>
+                            <div class="card-info">
+                                <h3>Total Orders</h3>
+                                <p id="dashboard-order-count">0</p>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card">
+                            <div class="card-icon icon-green"><i class="fa-solid fa-chair"></i></div>
+                            <div class="card-info">
+                                <h3>Dining Tables</h3>
+                                <p id="dashboard-table-count">0</p>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card">
+                            <div class="card-icon icon-blue"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="card-info">
+                                <h3>Reservations</h3>
+                                <p id="dashboard-res-count">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Navigation Action Cards -->
+                    <div class="dashboard-cards" style="margin-top: 25px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                        <div class="card glass-card" style="cursor: pointer;" onclick="showSection('menu-section')">
+                            <div class="card-icon icon-purple"><i class="fa-solid fa-burger"></i></div>
+                            <div class="card-info">
+                                <h3>Restaurant Menu</h3>
+                                <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Browse food items, drinks and catalog pricing.</p>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card" style="cursor: pointer;" onclick="showSection('orders-section')">
+                            <div class="card-icon icon-orange"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="card-info">
+                                <h3>Orders Management</h3>
+                                <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Track active orders, billing and order status.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- 2. RESTAURANT MENU SECTION -->
+                <section id="menu-section" class="section fade-in content-view" style="display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="showDashboard()">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+
+                    <div class="table-panel glass-panel">
+                        <h2><i class="fa-solid fa-utensils text-primary"></i> Restaurant Menu Catalog</h2>
+                        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Explore all available food items, beverages, and pricing.</p>
+
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Item ID</th>
+                                    <th>Food Item Name</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menuTableBody">
+                                <!-- Dynamic Restaurant Menu Data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 3. RESTAURANT ORDERS SECTION -->
+                <section id="orders-section" class="section fade-in content-view" style="display: none;">
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="showDashboard()">
+                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    </div>
+
+                    <div class="table-panel glass-panel">
+                        <h2><i class="fa-solid fa-cart-shopping text-primary"></i> Customer Orders</h2>
+                        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">View all active and completed restaurant orders.</p>
+
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Total Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Dynamic Orders Data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JS Link -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>
