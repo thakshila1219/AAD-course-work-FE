@@ -3,16 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const BASE_URL = 'http://localhost:8082/api/v1';
     let rawToken = localStorage.getItem('token');
 
-    console.log("Current Token in LocalStorage:", rawToken); // Console එකේ Token එක තිබේදැයි බලන්න
+    console.log("Current Token in LocalStorage:", rawToken); 
 
-    // 1. Token එක නැත්නම් විතරක් Login එකට යවන්න
     if (!rawToken || rawToken === "undefined" || rawToken === "null") {
         console.warn('No valid token found. Redirecting to login...');
         window.location.href = 'login.html';
         return;
     }
 
-    // Bearer Prefix එක එක පාරක් විතරක් තියෙන බව තහවුරු කරගන්න
     let authHeader = rawToken.startsWith('Bearer ') ? rawToken : `Bearer ${rawToken.trim()}`;
 
     // Live Clock Display
