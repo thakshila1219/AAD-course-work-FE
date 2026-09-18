@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RESTManager - Admin Control Panel</title>
-    <!-- Modern Font & FontAwesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
     <div class="app-container">
         
-        <!-- Admin Full Access Sidebar Navigation -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>REST<span class="text-primary">Manager</span></h2>
@@ -24,48 +21,34 @@
             <div class="sidebar-menu-wrapper">
                 <span class="menu-label">Overview</span>
                 <ul class="nav-links">
-                    <li class="nav-item active" data-section="admin-dashboard">
-                        <i class="fa-solid fa-chart-line"></i> Analytics & Overview
-                    </li>
+                    <li class="nav-item active" data-section="sec-overview"><i class="fa-solid fa-chart-line"></i> Analytics & Overview</li>
                 </ul>
 
                 <span class="menu-label">Menu & Dining</span>
                 <ul class="nav-links">
-                    <li class="nav-item" data-entity="Category"><i class="fa-solid fa-layer-group"></i> Categories</li>
-                    <li class="nav-item" data-entity="MenuItem"><i class="fa-solid fa-utensils"></i> Menu Items</li>
-                    <li class="nav-item" data-entity="DiningTable"><i class="fa-solid fa-chair"></i> Dining Tables</li>
-                    <li class="nav-item" data-entity="Reservation"><i class="fa-solid fa-calendar-check"></i> Reservations</li>
-                    <li class="nav-item" data-entity="RecipeItem"><i class="fa-solid fa-book-open"></i> Recipe Items</li>
+                    <li class="nav-item" data-section="sec-category"><i class="fa-solid fa-layer-group"></i> Categories</li>
+                    <li class="nav-item" data-section="sec-menu-item"><i class="fa-solid fa-utensils"></i> Menu Items</li>
+                    <li class="nav-item" data-section="sec-table"><i class="fa-solid fa-chair"></i> Dining Tables</li>
+                    <li class="nav-item" data-section="sec-reservation"><i class="fa-solid fa-calendar-check"></i> Reservations</li>
                 </ul>
 
-                <span class="menu-label">Sales & Finance</span>
+                <span class="menu-label">Sales & Inventory</span>
                 <ul class="nav-links">
-                    <li class="nav-item" data-entity="Order"><i class="fa-solid fa-cart-shopping"></i> Orders</li>
-                    <li class="nav-item" data-entity="OrderDetail"><i class="fa-solid fa-list-check"></i> Order Details</li>
-                    <li class="nav-item" data-entity="Payment"><i class="fa-solid fa-credit-card"></i> Payments</li>
-                    <li class="nav-item" data-entity="DiscountCoupon"><i class="fa-solid fa-ticket"></i> Discount Coupons</li>
+                    <li class="nav-item" data-section="sec-order"><i class="fa-solid fa-cart-shopping"></i> Orders & Details</li>
+                    <li class="nav-item" data-section="sec-ingredient"><i class="fa-solid fa-wheat-awn"></i> Ingredients (Stock)</li>
+                    <li class="nav-item" data-section="sec-supplier"><i class="fa-solid fa-truck-field"></i> Suppliers</li>
                 </ul>
 
-                <span class="menu-label">Inventory & Stock</span>
+                <span class="menu-label">System & Security</span>
                 <ul class="nav-links">
-                    <li class="nav-item" data-entity="Ingredient"><i class="fa-solid fa-wheat-awn"></i> Ingredients</li>
-                    <li class="nav-item" data-entity="Supplier"><i class="fa-solid fa-truck-field"></i> Suppliers</li>
-                </ul>
-
-                <span class="menu-label">System Administration</span>
-                <ul class="nav-links">
-                    <li class="nav-item" data-entity="User"><i class="fa-solid fa-user-gear"></i> Users Management</li>
-                    <li class="nav-item" data-entity="Role"><i class="fa-solid fa-user-shield"></i> User Roles</li>
-                    <li class="nav-item" data-entity="UserRole"><i class="fa-solid fa-users-rectangle"></i> User-Role Map</li>
-                    <li class="nav-item" data-entity="StaffAssignment"><i class="fa-solid fa-id-badge"></i> Staff Assignments</li>
+                    <li class="nav-item" data-section="sec-user"><i class="fa-solid fa-user-gear"></i> Users Management</li>
+                    <li class="nav-item" data-section="sec-role"><i class="fa-solid fa-user-shield"></i> User Roles</li>
                 </ul>
             </div>
         </aside>
 
-        <!-- Admin Main Content Area -->
+        <!-- Main Content Area -->
         <main class="main-content">
-            
-            <!-- Top Bar Header -->
             <header class="top-header">
                 <div class="header-titles">
                     <h1 id="page-title">Admin Dashboard</h1>
@@ -73,68 +56,46 @@
                 </div>
                 <div class="header-actions">
                     <div class="user-profile">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Admin Avatar">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=6366f1&color=fff" alt="Avatar">
                         <div class="user-info">
                             <span class="user-name" id="display-user-name">System Administrator</span>
                             <span class="user-role badge-admin-text">Super Admin</span>
                         </div>
                     </div>
-                    <button class="btn btn-danger" id="btnLogout">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
+                    <button class="btn btn-danger" id="btnLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 </div>
             </header>
 
-            <!-- Notification Alert Message -->
-            <div id="alert-msg" style="display: none; padding: 12px; margin: 15px 20px 0 20px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
+            <div id="alert-msg" style="display: none; padding: 12px; margin: 15px 20px 0 20px; border-radius: 6px; text-align: center;"></div>
 
-            <!-- Dynamic Views Container -->
             <div class="content-sections">
-                
-                <!-- 1. ADMIN DASHBOARD ANALYTICS OVERVIEW & AUDIT LOGS -->
-                <section id="admin-dashboard" class="section active-section fade-in">
+
+                <!-- 1. OVERVIEW SECTION -->
+                <section id="sec-overview" class="admin-section active">
                     <div class="dashboard-cards">
                         <div class="card glass-card">
                             <div class="card-icon icon-blue"><i class="fa-solid fa-sack-dollar"></i></div>
-                            <div class="card-info">
-                                <h3>Total Revenue</h3>
-                                <p id="dash-revenue">Rs. 245,800.00</p>
-                            </div>
+                            <div class="card-info"><h3>Total Revenue</h3><p id="dash-revenue">Rs. 245,800.00</p></div>
                         </div>
                         <div class="card glass-card">
                             <div class="card-icon icon-orange"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <div class="card-info">
-                                <h3>Total Orders</h3>
-                                <p id="dash-orders">128</p>
-                            </div>
+                            <div class="card-info"><h3>Total Orders</h3><p id="dash-orders">128</p></div>
                         </div>
                         <div class="card glass-card">
                             <div class="card-icon icon-purple"><i class="fa-solid fa-users-gear"></i></div>
-                            <div class="card-info">
-                                <h3>Active System Users</h3>
-                                <p id="dash-users">15</p>
-                            </div>
+                            <div class="card-info"><h3>Active Users</h3><p id="dash-users">15</p></div>
                         </div>
                         <div class="card glass-card">
                             <div class="card-icon icon-green"><i class="fa-solid fa-boxes-stacked"></i></div>
-                            <div class="card-info">
-                                <h3>Low Stock Items</h3>
-                                <p id="dash-stock">4 Items</p>
-                            </div>
+                            <div class="card-info"><h3>Low Stock Items</h3><p id="dash-stock">4 Items</p></div>
                         </div>
                     </div>
 
-                    <!-- System Audit Logs Panel -->
                     <div class="table-panel glass-panel" style="margin-top: 25px;">
-                        <h2><i class="fa-solid fa-clock-rotate-left text-primary"></i> Recent System Audit Logs</h2>
+                        <h2><i class="fa-solid fa-clock-rotate-left text-primary"></i> System Audit Logs</h2>
                         <table class="custom-table">
                             <thead>
-                                <tr>
-                                    <th>Log ID</th>
-                                    <th>User</th>
-                                    <th>Action / Event</th>
-                                    <th>Timestamp</th>
-                                </tr>
+                                <tr><th>Log ID</th><th>User</th><th>Action / Event</th><th>Timestamp</th></tr>
                             </thead>
                             <tbody id="audit-logs-table-body">
                                 <tr><td colspan="4" style="text-align:center;">Loading audit logs...</td></tr>
@@ -143,69 +104,197 @@
                     </div>
                 </section>
 
-                <!-- 2. ADMIN FULL CRUD ENTITY MANAGEMENT SECTION -->
-                <section id="admin-entity-section" class="section fade-in" style="display: none;">
+                <!-- 2. CATEGORIES SECTION -->
+                <section id="sec-category" class="admin-section" style="display: none;">
                     <div class="split-layout">
-                        
-                        <!-- Left Panel: Form -->
                         <div class="form-panel glass-panel">
-                            <h2 id="entity-form-title"><i class="fa-solid fa-sliders text-primary"></i> Entity Configuration</h2>
-                            <form id="admin-crud-form">
-                                <div class="form-group">
-                                    <label>Record Identifier (ID)</label>
-                                    <input type="text" id="admin-id" placeholder="Auto Generated or ID">
-                                </div>
-                                <div class="form-group">
-                                    <label>Primary Name / Title</label>
-                                    <input type="text" id="admin-name" placeholder="Enter Entity Name">
-                                </div>
-                                <div class="form-group">
-                                    <label>Details / Value / Quantity</label>
-                                    <input type="text" id="admin-detail" placeholder="Enter details or price">
-                                </div>
-                                <div class="form-group">
-                                    <label>Status / Access Role</label>
-                                    <select id="admin-status">
-                                        <option value="ACTIVE">ACTIVE</option>
-                                        <option value="INACTIVE">INACTIVE</option>
-                                        <option value="PENDING">PENDING</option>
-                                    </select>
-                                </div>
-
+                            <h2>Category Details</h2>
+                            <form id="form-category">
+                                <div class="form-group"><label>Category ID</label><input type="text" id="cat-id" readonly placeholder="Auto Generated"></div>
+                                <div class="form-group"><label>Category Name</label><input type="text" id="cat-name" placeholder="e.g. Beverages, Main Course"></div>
+                                <div class="form-group"><label>Description</label><textarea id="cat-desc" rows="3" placeholder="Category summary..."></textarea></div>
                                 <div class="form-actions">
-                                    <button type="button" id="btnSave" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save</button>
-                                    <button type="button" id="btnUpdate" class="btn btn-warning"><i class="fa-solid fa-pen"></i> Update</button>
-                                    <button type="button" id="btnDelete" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+                                    <button type="button" class="btn btn-danger" onclick="clearForm('form-category')">Clear</button>
                                 </div>
                             </form>
                         </div>
-
-                        <!-- Right Panel: Grid Table with Search -->
                         <div class="table-panel glass-panel">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <h2 id="entity-table-title" style="margin: 0;">System Records Overview</h2>
-                                <!-- Filter/Search Bar -->
-                                <div id="search-container" style="display: flex; gap: 8px;">
-                                    <input type="text" id="search-input" placeholder="Search records..." style="padding: 6px 12px; border-radius: 4px; border: 1px solid #ccc;">
-                                    <button id="btnSearch" class="btn btn-primary" style="padding: 6px 12px;"><i class="fa-solid fa-magnifying-glass"></i></button>
-                                </div>
-                            </div>
-
+                            <h2>Category List</h2>
                             <table class="custom-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name / Details</th>
-                                        <th>Value / Status</th>
-                                        <th>Admin Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-table-body">
-                                    <!-- Dynamic API Data Rows -->
-                                </tbody>
+                                <thead><tr><th>ID</th><th>Category Name</th><th>Description</th><th>Actions</th></tr></thead>
+                                <tbody id="table-category"></tbody>
                             </table>
                         </div>
+                    </div>
+                </section>
 
+                <!-- 3. MENU ITEMS SECTION -->
+                <section id="sec-menu-item" class="admin-section" style="display: none;">
+                    <div class="split-layout">
+                        <div class="form-panel glass-panel">
+                            <h2>Menu Item Configuration</h2>
+                            <form id="form-menu-item">
+                                <div class="form-group"><label>Item Code / ID</label><input type="text" id="menu-id" placeholder="M001"></div>
+                                <div class="form-group"><label>Item Name</label><input type="text" id="menu-name" placeholder="Chicken Burger"></div>
+                                <div class="form-group"><label>Category</label><select id="menu-category"><option value="">Select Category</option></select></div>
+                                <div class="form-group"><label>Price (LKR)</label><input type="number" id="menu-price" step="0.01" placeholder="1250.00"></div>
+                                <div class="form-group"><label>Availability Status</label>
+                                    <select id="menu-status"><option value="AVAILABLE">AVAILABLE</option><option value="OUT_OF_STOCK">OUT OF STOCK</option></select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" onclick="saveMenuItem()">Save Item</button>
+                                    <button type="button" class="btn btn-danger" onclick="clearForm('form-menu-item')">Clear</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-panel glass-panel">
+                            <h2>Menu Items List</h2>
+                            <table class="custom-table">
+                                <thead><tr><th>ID</th><th>Item Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="table-menu-item"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. DINING TABLES SECTION -->
+                <section id="sec-table" class="admin-section" style="display: none;">
+                    <div class="split-layout">
+                        <div class="form-panel glass-panel">
+                            <h2>Dining Table Details</h2>
+                            <form id="form-table">
+                                <div class="form-group"><label>Table Number / ID</label><input type="text" id="table-id" placeholder="T-01"></div>
+                                <div class="form-group"><label>Seating Capacity</label><input type="number" id="table-capacity" placeholder="4"></div>
+                                <div class="form-group"><label>Table Status</label>
+                                    <select id="table-status"><option value="AVAILABLE">AVAILABLE</option><option value="OCCUPIED">OCCUPIED</option><option value="RESERVED">RESERVED</option></select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" onclick="saveTable()">Save Table</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-panel glass-panel">
+                            <h2>Dining Tables</h2>
+                            <table class="custom-table">
+                                <thead><tr><th>Table No</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody id="table-dining-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. RESERVATIONS SECTION -->
+                <section id="sec-reservation" class="admin-section" style="display: none;">
+                    <div class="table-panel glass-panel">
+                        <h2>System Reservations</h2>
+                        <table class="custom-table">
+                            <thead><tr><th>ID</th><th>Customer Name</th><th>Table</th><th>Date & Time</th><th>Guests</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="table-reservation"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 6. ORDERS SECTION -->
+                <section id="sec-order" class="admin-section" style="display: none;">
+                    <div class="table-panel glass-panel">
+                        <h2>Order Transactions & Status</h2>
+                        <table class="custom-table">
+                            <thead><tr><th>Order ID</th><th>Customer / Table</th><th>Total Amount</th><th>Payment Status</th><th>Order Status</th><th>Actions</th></tr></thead>
+                            <tbody id="table-order"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 7. INGREDIENTS SECTION -->
+                <section id="sec-ingredient" class="admin-section" style="display: none;">
+                    <div class="split-layout">
+                        <div class="form-panel glass-panel">
+                            <h2>Stock & Ingredient Item</h2>
+                            <form id="form-ingredient">
+                                <div class="form-group"><label>Ingredient ID</label><input type="text" id="ing-id" placeholder="ING01"></div>
+                                <div class="form-group"><label>Item Name</label><input type="text" id="ing-name" placeholder="Cheese Slice"></div>
+                                <div class="form-group"><label>Available Quantity</label><input type="number" id="ing-qty" placeholder="100"></div>
+                                <div class="form-group"><label>Unit Type</label><input type="text" id="ing-unit" placeholder="kg, pcs, liters"></div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" onclick="saveIngredient()">Save Ingredient</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-panel glass-panel">
+                            <h2>Stock Inventory</h2>
+                            <table class="custom-table">
+                                <thead><tr><th>ID</th><th>Name</th><th>Quantity</th><th>Unit</th><th>Actions</th></tr></thead>
+                                <tbody id="table-ingredient"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. SUPPLIERS SECTION -->
+                <section id="sec-supplier" class="admin-section" style="display: none;">
+                    <div class="split-layout">
+                        <div class="form-panel glass-panel">
+                            <h2>Supplier Details</h2>
+                            <form id="form-supplier">
+                                <div class="form-group"><label>Supplier ID</label><input type="text" id="sup-id" placeholder="SUP01"></div>
+                                <div class="form-group"><label>Supplier / Company Name</label><input type="text" id="sup-name" placeholder="Anchor Dairy"></div>
+                                <div class="form-group"><label>Contact Person</label><input type="text" id="sup-contact" placeholder="John Doe"></div>
+                                <div class="form-group"><label>Phone Number</label><input type="text" id="sup-phone" placeholder="071XXXXXXX"></div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" onclick="saveSupplier()">Save Supplier</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-panel glass-panel">
+                            <h2>Suppliers Directory</h2>
+                            <table class="custom-table">
+                                <thead><tr><th>ID</th><th>Company</th><th>Contact</th><th>Phone</th><th>Actions</th></tr></thead>
+                                <tbody id="table-supplier"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. USERS MANAGEMENT SECTION -->
+                <section id="sec-user" class="admin-section" style="display: none;">
+                    <div class="split-layout">
+                        <div class="form-panel glass-panel">
+                            <h2>User Access Control</h2>
+                            <form id="form-user">
+                                <div class="form-group"><label>User ID</label><input type="text" id="usr-id" placeholder="U001"></div>
+                                <div class="form-group"><label>Full Name</label><input type="text" id="usr-name" placeholder="Thakshila Madushani"></div>
+                                <div class="form-group"><label>Email</label><input type="email" id="usr-email" placeholder="user@gmail.com"></div>
+                                <div class="form-group"><label>Role Assignment</label>
+                                    <select id="usr-role"><option value="ROLE_ADMIN">ADMIN</option><option value="ROLE_STAFF">STAFF</option><option value="ROLE_CUSTOMER">CUSTOMER</option></select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save User</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="table-panel glass-panel">
+                            <h2>System Users</h2>
+                            <table class="custom-table">
+                                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
+                                <tbody id="table-user"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 10. ROLES SECTION -->
+                <section id="sec-role" class="admin-section" style="display: none;">
+                    <div class="table-panel glass-panel">
+                        <h2>System Security Roles</h2>
+                        <table class="custom-table">
+                            <thead><tr><th>Role ID</th><th>Role Name</th><th>Description</th></tr></thead>
+                            <tbody id="table-role">
+                                <tr><td>1</td><td>ROLE_ADMIN</td><td>Full Administrative Access</td></tr>
+                                <tr><td>2</td><td>ROLE_STAFF</td><td>Restaurant Order & Table Management Access</td></tr>
+                                <tr><td>3</td><td>ROLE_CUSTOMER</td><td>Online Reservations & Dining Orders Access</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -213,7 +302,7 @@
         </main>
     </div>
 
-    <script src="js/admin.js"></script>
+    <!-- Correct File Link: admin_dashboard.js -->
+    <script src="js/admin_dashbord.js"></script>
 </body>
-
 </html>
