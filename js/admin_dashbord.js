@@ -1879,77 +1879,57 @@ function renderCategories(categories) {
 async function saveCategory() {
 
     const id =
-        document.getElementById(
-            "cat-id"
-        )?.value || "";
+        document.getElementById("cat-id")?.value ||
+        editingCategoryId ||
+        "";
 
-
-    const name =
-        document.getElementById(
-            "cat-name"
-        )?.value.trim() || "";
-
+    const categoryName =
+        document.getElementById("cat-name")?.value.trim() || "";
 
     const description =
-        document.getElementById(
-            "cat-desc"
-        )?.value.trim() || "";
+        document.getElementById("cat-desc")?.value.trim() || "";
 
-
-    if (!name) {
-
+    if (!categoryName) {
         showAlert(
             "Category name is required.",
             "error"
         );
-
         return;
-
     }
 
-
+    // Backend DTO එකේ property name = categoryName
     const category = {
-
-        name: name,
-
+        categoryName: categoryName,
         description: description
-
     };
 
-
+    // Edit කරනවා නම් ID එකත් send කරන්න
     if (id) {
-
-        category.categoryId =
-            Number(id);
-
+        category.categoryId = Number(id);
     }
 
+    console.log("Category Request:", category);
 
     try {
 
-        const response =
-            await fetch(
-                `${BASE_URL}/api/v1/categories`,
-                {
-                    method: id ? "PUT" : "POST",
-                    headers: getHeaders(true),
-                    body: JSON.stringify(category)
-                }
-            );
+        const response = await fetch(
+            `${BASE_URL}/api/v1/categories`,
+            {
+                method: id ? "PUT" : "POST",
+                headers: getHeaders(true),
+                body: JSON.stringify(category)
+            }
+        );
 
+        const data = await parseResponse(response);
 
-        const data =
-            await parseResponse(response);
-
+        console.log("Category Response:", data);
 
         if (!response.ok) {
-
             throw new Error(
                 getResponseMessage(data)
             );
-
         }
-
 
         showAlert(
             id
@@ -1957,11 +1937,12 @@ async function saveCategory() {
                 : "Category saved successfully."
         );
 
+        // Edit state reset
+        editingCategoryId = null;
 
         clearForm("form-category");
 
         await loadCategories();
-
 
     } catch (error) {
 
@@ -1970,17 +1951,13 @@ async function saveCategory() {
             error
         );
 
-
         showAlert(
             "Failed to save category: " +
             error.message,
             "error"
         );
-
     }
-
 }
-
 
 // ============================================================
 // EDIT CATEGORY
@@ -2000,11 +1977,16 @@ async function editCategory(id) {
             );
 
 
+        /*
+         * If category is not available
+         * in current JavaScript array,
+         * load categories again.
+         */
         if (!category) {
 
             const response =
                 await fetch(
-                   `${BASE_URL}/api/v1/categories`,
+                    `${BASE_URL}/api/v1/categories`,
                     {
                         method: "GET",
                         headers: getHeaders()
@@ -2053,7 +2035,9 @@ async function editCategory(id) {
         }
 
 
-        fillCategoryForm(category);
+        fillCategoryForm(
+            category
+        );
 
 
     } catch (error) {
@@ -2083,23 +2067,14 @@ function fillCategoryForm(category) {
 
     if (!category) return;
 
-
     const id =
-        category.categoryId ??
-        category.id;
+        category.categoryId;
 
-
-    const name =
-        category.name ??
-        category.categoryName ??
-        "";
-
+    const categoryName =
+        category.categoryName ?? "";
 
     const description =
-        category.description ??
-        category.desc ??
-        "";
-
+        category.description ?? "";
 
     const idField =
         document.getElementById("cat-id");
@@ -2110,34 +2085,24 @@ function fillCategoryForm(category) {
     const descriptionField =
         document.getElementById("cat-desc");
 
-
     if (idField) {
-
-        idField.value =
-            id || "";
-
+        idField.value = id;
     }
-
 
     if (nameField) {
-
-        nameField.value =
-            name;
-
+        nameField.value = categoryName;
     }
-
 
     if (descriptionField) {
-
-        descriptionField.value =
-            description;
-
+        descriptionField.value = description;
     }
 
+    editingCategoryId = id;
 
-    editingCategoryId =
-        id;
-
+    console.log(
+        "Editing Category ID:",
+        editingCategoryId
+    );
 }
 
 
@@ -2160,9 +2125,17 @@ async function deleteCategory(id) {
 
     try {
 
+        /*
+         * Controller:
+         *
+         * @DeleteMapping("/{categoryId}")
+         *
+         * Therefore ID must be included
+         * in the URL.
+         */
         const response =
             await fetch(
-                `${BASE_URL}/api/v1/categories`,
+                `${BASE_URL}/api/v1/categories/${id}`,
                 {
                     method: "DELETE",
                     headers: getHeaders()
