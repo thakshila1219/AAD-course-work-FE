@@ -1,258 +1,2302 @@
-let cart = [];
-const BASE_URL = 'http://localhost:8082/api/v1';
+document.addEventListener('DOMContentLoaded', function () {
 
-document.addEventListener('DOMContentLoaded', () => {
+    // =========================================================
+    // CONFIG
+    // =========================================================
 
-    // Auth Check
+    const BASE_URL = 'http://localhost:8082/v1';
+
+
+    // =========================================================
+    // TOKEN
+    // =========================================================
+
     const rawToken = localStorage.getItem('token');
-    if (!rawToken) {
+
+    if (
+        !rawToken ||
+        rawToken === 'undefined' ||
+        rawToken === 'null'
+    ) {
         window.location.href = 'login.html';
         return;
     }
 
-    // 1. Check Logged User
-    const userStr = localStorage.getItem('user') || localStorage.getItem('loggedUser');
-    if (userStr) {
-        try {
-            const user = JSON.parse(userStr);
-            document.getElementById('loggedUserName').innerText = user.name || user.username || 'Customer';
-        } catch (e) {
-            document.getElementById('loggedUserName').innerText = userStr;
-        }
-    }
 
-    // 2. Cart Drawer Controls
-    const cartDrawer = document.getElementById('cartDrawer');
-    const cartOverlay = document.getElementById('cartOverlay');
-    
-    document.getElementById('btnCart').addEventListener('click', () => {
-        cartDrawer.classList.add('open');
-        cartOverlay.classList.add('show');
-    });
+    const authHeader =
+        rawToken.startsWith('Bearer ')
+            ? rawToken
+            : 'Bearer ' + rawToken.trim();
 
-    document.getElementById('btnCloseCart').addEventListener('click', closeCart);
-    cartOverlay.addEventListener('click', closeCart);
 
-    function closeCart() {
-        cartDrawer.classList.remove('open');
-        cartOverlay.classList.remove('show');
-    }
+    // =========================================================
+    // USER
+    // =========================================================
 
-    // Logout Functionality
-    document.getElementById('btnLogout').addEventListener('click', () => {
-        localStorage.clear();
-        window.location.href = 'login.html';
-    });
+    let currentUser = null;
 
-    // Load Items
-    loadMenuItems();
-
-    // Handle Reservation Submit
-    const resForm = document.getElementById('reservationForm');
-    if (resForm) {
-        resForm.addEventListener('submit', submitReservation);
-    }
-});
-
-// Headers Helper
-function getAuthHeaders() {
-    const rawToken = localStorage.getItem('token') || '';
-    const cleanToken = rawToken.replace('Bearer ', '').trim();
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${cleanToken}`
-    };
-}
-
-// Fetch Menu Items for Customer
-async function loadMenuItems() {
     try {
-        const response = await fetch(`${BASE_URL}/items`, {
-            headers: getAuthHeaders()
-        });
 
-        if (response.status === 401 || response.status === 403) {
-            localStorage.clear();
-            window.location.href = 'login.html';
+        currentUser =
+            JSON.parse(localStorage.getItem('user')) ||
+            JSON.parse(localStorage.getItem('loggedUser'));
+
+    } catch (error) {
+
+        console.error('Cannot read logged user:', error);
+
+    }
+
+
+    if (!currentUser) {
+
+        alert('User information not found. Please login again.');
+
+        localStorage.clear();
+
+        window.location.href = 'login.html';
+
+        return;
+    }
+
+
+    console.log('Current Customer:', currentUser);
+
+
+    // =========================================================
+    // CUSTOMER ID
+    // =========================================================
+
+    function getCurrentUserId() {
+
+        if (
+            currentUser &&
+            currentUser.userId !== null &&
+            currentUser.userId !== undefined
+        ) {
+
+            return Number(currentUser.userId);
+
+        }
+
+        return null;
+    }
+
+
+    // =========================================================
+    // USER INFORMATION
+    // =========================================================
+
+    function loadUserInformation() {
+
+        const username =
+            currentUser.username ||
+            currentUser.name ||
+            'Customer';
+
+
+        const email =
+            currentUser.email || '';
+
+
+        const role =
+            String(
+                currentUser.role || 'CUSTOMER'
+            )
+                .toUpperCase()
+                .replace('ROLE_', '');
+
+
+        const displayUser =
+            document.getElementById('display-user');
+
+
+        if (displayUser) {
+            displayUser.textContent = username;
+        }
+
+
+        const welcome =
+            document.getElementById('userWelcomeMsg');
+
+
+        if (welcome) {
+
+            welcome.textContent =
+                'Welcome Back, ' +
+                username +
+                '!';
+
+        }
+
+
+        const profileName =
+            document.getElementById('profileName');
+
+
+        if (profileName) {
+            profileName.value = username;
+        }
+
+
+        const profileEmail =
+            document.getElementById('profileEmail');
+
+
+        if (profileEmail) {
+            profileEmail.value = email;
+        }
+
+
+        const profileRole =
+            document.getElementById('profileRole');
+
+
+        if (profileRole) {
+            profileRole.value = role;
+        }
+
+    }
+
+
+    loadUserInformation();
+
+
+    // =========================================================
+    // CURRENT TIME
+    // =========================================================
+
+    function updateCurrentTime() {
+
+        const element =
+            document.getElementById('current-time');
+
+
+        if (!element) {
             return;
         }
 
-        const data = await response.json();
-        const items = Array.isArray(data) ? data : (data?.data || []);
-        const menuGrid = document.getElementById('menuGrid');
 
-        if (!menuGrid) return;
+        const now = new Date();
+
+
+        element.textContent =
+            now.toLocaleDateString() +
+            ' ' +
+            now.toLocaleTimeString();
+
+    }
+
+
+    updateCurrentTime();
+
+    setInterval(updateCurrentTime, 1000);
+
+
+    // =========================================================
+    // API REQUEST
+    // =========================================================
+
+    async function apiRequest(endpoint, options = {}) {
+
+        try {
+
+            const response =
+                await fetch(
+                    BASE_URL + '/' + endpoint,
+                    {
+                        ...options,
+
+                        headers: {
+
+                            'Content-Type':
+                                'application/json',
+
+                            'Authorization':
+                                authHeader,
+
+                            ...(options.headers || {})
+
+                        }
+
+                    }
+                );
+
+
+            if (
+                response.status === 401 ||
+                response.status === 403
+            ) {
+
+                alert(
+                    'Session expired. Please login again.'
+                );
+
+                localStorage.clear();
+
+                window.location.href =
+                    'login.html';
+
+                return null;
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'HTTP Error: ' +
+                    response.status
+                );
+
+            }
+
+
+            const contentType =
+                response.headers.get('content-type');
+
+
+            if (
+                contentType &&
+                contentType.includes('application/json')
+            ) {
+
+                return await response.json();
+
+            }
+
+
+            return await response.text();
+
+        } catch (error) {
+
+            console.error(
+                'API Error:',
+                endpoint,
+                error
+            );
+
+            return null;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // EXTRACT LIST
+    // =========================================================
+
+    function extractList(response) {
+
+        if (!response) {
+            return [];
+        }
+
+
+        if (Array.isArray(response)) {
+            return response;
+        }
+
+
+        if (
+            response.data &&
+            Array.isArray(response.data)
+        ) {
+            return response.data;
+        }
+
+
+        if (
+            response.data &&
+            Array.isArray(response.data.content)
+        ) {
+            return response.data.content;
+        }
+
+
+        if (
+            Array.isArray(response.content)
+        ) {
+            return response.content;
+        }
+
+
+        if (
+            response.result &&
+            Array.isArray(response.result)
+        ) {
+            return response.result;
+        }
+
+
+        if (
+            response.result &&
+            Array.isArray(response.result.content)
+        ) {
+            return response.result.content;
+        }
+
+
+        return [];
+
+    }
+
+
+    // =========================================================
+    // CART
+    // =========================================================
+
+    let cart =
+        JSON.parse(
+            localStorage.getItem('customerCart') || '[]'
+        );
+
+
+    function saveCart() {
+
+        localStorage.setItem(
+            'customerCart',
+            JSON.stringify(cart)
+        );
+
+    }
+
+
+    function getCartQuantity() {
+
+        return cart.reduce(
+            function (total, item) {
+
+                return total + item.quantity;
+
+            },
+            0
+        );
+
+    }
+
+
+    function getCartTotal() {
+
+        return cart.reduce(
+            function (total, item) {
+
+                return total +
+                    Number(item.price) *
+                    Number(item.quantity);
+
+            },
+            0
+        );
+
+    }
+
+
+    // =========================================================
+    // MENU
+    // =========================================================
+
+    async function fetchMenuItems() {
+
+        const menuGrid =
+            document.getElementById('menuGrid');
+
+
+        if (!menuGrid) {
+            return;
+        }
+
+
+        menuGrid.innerHTML = `
+
+            <div class="panel"
+                 style="grid-column:1/-1;text-align:center;">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading menu...
+
+            </div>
+
+        `;
+
+
+        const response =
+            await apiRequest('menu-item');
+
+
+        console.log(
+            'Menu Response:',
+            response
+        );
+
+
+        const items =
+            extractList(response);
+
+
         menuGrid.innerHTML = '';
 
+
         if (items.length === 0) {
-            menuGrid.innerHTML = '<div class="col-12"><p class="text-center text-muted">No menu items available.</p></div>';
+
+            menuGrid.innerHTML = `
+
+                <div class="panel"
+                     style="grid-column:1/-1;text-align:center;">
+
+                    No menu items available.
+
+                </div>
+
+            `;
+
             return;
         }
 
-        items.forEach(item => {
-            const itemId = item.id || item.itemId;
-            const name = item.name || item.itemName || 'Food Item';
-            const price = item.price || 0;
-            const image = item.image || item.imageUrl || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400';
 
-            const card = `
-                <div class="col-md-4 col-lg-3">
-                    <div class="card food-card h-100 shadow-sm p-2">
-                        <img src="${image}" class="card-img-top rounded" style="height: 180px; object-fit: cover;" alt="${name}">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title fs-6 fw-bold">${name}</h5>
-                            <div class="mt-auto d-flex justify-content-between align-items-center pt-2">
-                                <span class="fw-bold text-success">Rs. ${Number(price).toFixed(2)}</span>
-                                <button class="btn btn-sm btn-warning" onclick="addToCart(${itemId}, '${name.replace(/'/g, "\\'")}', ${price})">
-                                    <i class="fa-solid fa-plus"></i> Add
-                                </button>
-                            </div>
+        items.forEach(function (item) {
+
+            const id =
+                item.itemId ||
+                item.menuItemId ||
+                item.id;
+
+
+            const name =
+                item.itemName ||
+                item.menuItemName ||
+                item.name ||
+                'Food Item';
+
+
+            const category =
+                item.categoryName ||
+                item.category ||
+                item.categoryId ||
+                'Food';
+
+
+            const price =
+                Number(
+                    item.price ||
+                    item.unitPrice ||
+                    0
+                );
+
+
+            const availability =
+                item.availability ??
+                item.available ??
+                true;
+
+
+            const card =
+                document.createElement('div');
+
+
+            card.className =
+                'food-card' +
+                (
+                    !availability
+                        ? ' unavailable'
+                        : ''
+                );
+
+
+            card.innerHTML = `
+
+                <div class="food-image">
+
+                    <i class="fa-solid fa-bowl-food"></i>
+
+                </div>
+
+
+                <div class="food-content">
+
+                    <h3>
+                        ${escapeHtml(name)}
+                    </h3>
+
+
+                    <div class="food-category">
+
+                        ${escapeHtml(String(category))}
+
+                    </div>
+
+
+                    <div class="food-bottom">
+
+                        <span class="food-price">
+
+                            Rs. ${price.toFixed(2)}
+
+                        </span>
+
+
+                        <button
+                            class="btn btn-primary"
+                            ${!availability ? 'disabled' : ''}
+                            onclick="addToCart(
+                                ${Number(id)},
+                                '${escapeJs(name)}',
+                                ${price}
+                            )">
+
+                            <i class="fa-solid fa-cart-plus"></i>
+
+                            Add
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            menuGrid.appendChild(card);
+
+        });
+
+    }
+
+
+    // =========================================================
+    // ADD TO CART
+    // =========================================================
+
+    window.addToCart =
+        function (id, name, price) {
+
+            const existing =
+                cart.find(
+                    item =>
+                        Number(item.id) === Number(id)
+                );
+
+
+            if (existing) {
+
+                existing.quantity++;
+
+            } else {
+
+                cart.push({
+
+                    id: Number(id),
+
+                    name: name,
+
+                    price: Number(price),
+
+                    quantity: 1
+
+                });
+
+            }
+
+
+            saveCart();
+
+            updateCartUI();
+
+
+            alert(
+                name +
+                ' added to cart.'
+            );
+
+        };
+
+
+    // =========================================================
+    // CART UI
+    // =========================================================
+
+    function updateCartUI() {
+
+        const container =
+            document.getElementById('cartItems');
+
+
+        if (!container) {
+            return;
+        }
+
+
+        container.innerHTML = '';
+
+
+        if (cart.length === 0) {
+
+            container.innerHTML = `
+
+                <div style="
+                    text-align:center;
+                    padding:50px;
+                    color:#64748b;
+                ">
+
+                    <i class="fa-solid fa-cart-shopping"
+                       style="font-size:45px;margin-bottom:15px;">
+                    </i>
+
+                    <h3 style="color:white;margin-bottom:8px;">
+                        Your cart is empty
+                    </h3>
+
+                    <p>
+                        Add some delicious food from our menu.
+                    </p>
+
+                </div>
+
+            `;
+
+        } else {
+
+            cart.forEach(function (item, index) {
+
+                const subtotal =
+                    Number(item.price) *
+                    Number(item.quantity);
+
+
+                container.innerHTML += `
+
+                    <div class="cart-item">
+
+                        <div class="cart-item-info">
+
+                            <h3>
+                                ${escapeHtml(item.name)}
+                            </h3>
+
+                            <span>
+                                Rs. ${Number(item.price).toFixed(2)}
+                                each
+                            </span>
+
                         </div>
+
+
+                        <div class="quantity-control">
+
+                            <button
+                                class="qty-btn"
+                                onclick="changeQuantity(
+                                    ${index},
+                                    -1
+                                )">
+
+                                −
+
+                            </button>
+
+
+                            <strong>
+                                ${item.quantity}
+                            </strong>
+
+
+                            <button
+                                class="qty-btn"
+                                onclick="changeQuantity(
+                                    ${index},
+                                    1
+                                )">
+
+                                +
+
+                            </button>
+
+                        </div>
+
+
+                        <strong style="color:#fbbf24;">
+
+                            Rs. ${subtotal.toFixed(2)}
+
+                        </strong>
+
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="removeFromCart(${index})">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
                     </div>
-                </div>
-            `;
-            menuGrid.innerHTML += card;
-        });
 
-    } catch (err) {
-        console.error('Error fetching menu:', err);
+                `;
+
+            });
+
+        }
+
+
+        const quantity =
+            getCartQuantity();
+
+
+        const total =
+            getCartTotal();
+
+
+        const itemCount =
+            document.getElementById(
+                'cartItemCount'
+            );
+
+
+        const subtotal =
+            document.getElementById(
+                'cartSubtotal'
+            );
+
+
+        const totalElement =
+            document.getElementById(
+                'cartTotal'
+            );
+
+
+        const dashboardCart =
+            document.getElementById(
+                'dashboard-cart-count'
+            );
+
+
+        if (itemCount) {
+            itemCount.textContent = quantity;
+        }
+
+
+        if (subtotal) {
+            subtotal.textContent =
+                'Rs. ' +
+                total.toFixed(2);
+        }
+
+
+        if (totalElement) {
+            totalElement.textContent =
+                'Rs. ' +
+                total.toFixed(2);
+        }
+
+
+        if (dashboardCart) {
+            dashboardCart.textContent =
+                quantity;
+        }
+
+
+        updateCheckoutSummary();
+
     }
-}
 
-// Add to Cart Logic
-function addToCart(id, name, price) {
-    const existing = cart.find(item => item.id === id);
-    if (existing) {
-        existing.qty++;
-    } else {
-        cart.push({ id, name, price, qty: 1 });
-    }
-    renderCart();
-}
 
-// Render Cart Items
-function renderCart() {
-    const container = document.getElementById('cartItemsContainer');
-    const badge = document.getElementById('cartBadge');
-    const totalElement = document.getElementById('cartTotal');
-    
-    container.innerHTML = '';
-    let total = 0;
-    let count = 0;
+    // =========================================================
+    // CHANGE QUANTITY
+    // =========================================================
 
-    if (cart.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center my-4">Cart is empty</p>';
-    } else {
-        cart.forEach((item, index) => {
-            total += item.price * item.qty;
-            count += item.qty;
+    window.changeQuantity =
+        function (index, amount) {
+
+            if (!cart[index]) {
+                return;
+            }
+
+
+            cart[index].quantity += amount;
+
+
+            if (cart[index].quantity <= 0) {
+
+                cart.splice(index, 1);
+
+            }
+
+
+            saveCart();
+
+            updateCartUI();
+
+        };
+
+
+    // =========================================================
+    // REMOVE CART ITEM
+    // =========================================================
+
+    window.removeFromCart =
+        function (index) {
+
+            cart.splice(index, 1);
+
+            saveCart();
+
+            updateCartUI();
+
+        };
+
+
+    // =========================================================
+    // CHECKOUT
+    // =========================================================
+
+    window.goToCheckout =
+        function () {
+
+            if (cart.length === 0) {
+
+                alert(
+                    'Your cart is empty.'
+                );
+
+                return;
+            }
+
+
+            showSection(
+                'checkout-section'
+            );
+
+
+            updateCheckoutSummary();
+
+        };
+
+
+    function updateCheckoutSummary() {
+
+        const container =
+            document.getElementById(
+                'checkoutSummary'
+            );
+
+
+        const totalElement =
+            document.getElementById(
+                'checkoutTotal'
+            );
+
+
+        if (!container) {
+            return;
+        }
+
+
+        container.innerHTML = '';
+
+
+        cart.forEach(function (item) {
+
+            const subtotal =
+                Number(item.price) *
+                Number(item.quantity);
+
+
             container.innerHTML += `
-                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                    <div>
-                        <h6 class="m-0">${item.name}</h6>
-                        <small class="text-muted">Rs. ${item.price} x ${item.qty}</small>
-                    </div>
-                    <div class="d-flex gap-1 align-items-center">
-                        <button class="btn btn-sm btn-outline-secondary px-2" onclick="updateQty(${index}, -1)">-</button>
-                        <span>${item.qty}</span>
-                        <button class="btn btn-sm btn-outline-secondary px-2" onclick="updateQty(${index}, 1)">+</button>
-                    </div>
+
+                <div class="summary-row">
+
+                    <span>
+
+                        ${escapeHtml(item.name)}
+                        × ${item.quantity}
+
+                    </span>
+
+                    <span>
+
+                        Rs. ${subtotal.toFixed(2)}
+
+                    </span>
+
                 </div>
+
             `;
-        });
-    }
 
-    badge.innerText = count;
-    totalElement.innerText = `Rs. ${total.toFixed(2)}`;
-}
-
-function updateQty(index, delta) {
-    cart[index].qty += delta;
-    if (cart[index].qty <= 0) cart.splice(index, 1);
-    renderCart();
-}
-
-// Place Customer Order
-async function placeCustomerOrder() {
-    if (cart.length === 0) {
-        alert("Your cart is empty!");
-        return;
-    }
-
-    const userStr = localStorage.getItem('user') || localStorage.getItem('loggedUser');
-    let user = null;
-    if (userStr) {
-        try { user = JSON.parse(userStr); } catch (e) {}
-    }
-    
-    const orderData = {
-        userId: user ? (user.id || user.userId) : null,
-        items: cart,
-        totalAmount: cart.reduce((sum, item) => sum + (item.price * item.qty), 0)
-    };
-
-    try {
-        const response = await fetch(`${BASE_URL}/orders`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(orderData)
         });
 
-        if (response.ok) {
-            alert("Order placed successfully!");
-            cart = [];
-            renderCart();
-            const cartDrawer = document.getElementById('cartDrawer');
-            const cartOverlay = document.getElementById('cartOverlay');
-            cartDrawer.classList.remove('open');
-            cartOverlay.classList.remove('show');
-        } else {
-            alert("Failed to place the order. Please check backend controllers.");
+
+        if (totalElement) {
+
+            totalElement.textContent =
+                'Rs. ' +
+                getCartTotal().toFixed(2);
+
         }
-    } catch (err) {
-        console.error(err);
-        alert("An error occurred while sending the order!");
-    }
-}
 
-// Reserve Table
-async function submitReservation(e) {
-    e.preventDefault();
-
-    const date = document.getElementById('resDate').value;
-    const time = document.getElementById('resTime').value;
-    const guests = document.getElementById('resGuests').value;
-
-    const userStr = localStorage.getItem('user') || localStorage.getItem('loggedUser');
-    let user = null;
-    if (userStr) {
-        try { user = JSON.parse(userStr); } catch (e) {}
     }
 
-    const reservationData = {
-        userId: user ? (user.id || user.userId) : null,
-        reservationDate: date,
-        reservationTime: time,
-        guestCount: guests
-    };
 
-    try {
-        const response = await fetch(`${BASE_URL}/reservations`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify(reservationData)
+    // =========================================================
+    // PAYMENT
+    // =========================================================
+
+    let selectedPayment = null;
+
+
+    window.selectPayment =
+        function (method) {
+
+            selectedPayment =
+                method;
+
+
+            document
+                .getElementById('cashOption')
+                .classList.remove('selected');
+
+
+            document
+                .getElementById('cardOption')
+                .classList.remove('selected');
+
+
+            if (method === 'CASH') {
+
+                document
+                    .getElementById('cashOption')
+                    .classList.add('selected');
+
+
+                document
+                    .querySelector(
+                        'input[value="CASH"]'
+                    )
+                    .checked = true;
+
+
+                document
+                    .getElementById('cardDetails')
+                    .style.display = 'none';
+
+            }
+
+
+            if (method === 'CARD') {
+
+                document
+                    .getElementById('cardOption')
+                    .classList.add('selected');
+
+
+                document
+                    .querySelector(
+                        'input[value="CARD"]'
+                    )
+                    .checked = true;
+
+
+                document
+                    .getElementById('cardDetails')
+                    .style.display = 'block';
+
+            }
+
+        };
+
+
+    // =========================================================
+    // CONFIRM ORDER
+    // =========================================================
+
+    window.confirmOrder =
+        function () {
+
+            if (cart.length === 0) {
+
+                alert(
+                    'Your cart is empty.'
+                );
+
+                return;
+            }
+
+
+            if (!selectedPayment) {
+
+                alert(
+                    'Please select a payment method.'
+                );
+
+                return;
+            }
+
+
+            if (selectedPayment === 'CARD') {
+
+                const cardNumber =
+                    document.getElementById(
+                        'cardNumber'
+                    ).value.trim();
+
+
+                if (!cardNumber) {
+
+                    alert(
+                        'Please enter your card number.'
+                    );
+
+                    return;
+                }
+
+            }
+
+
+            /*
+             * IMPORTANT
+             *
+             * We are NOT sending a guessed POST request
+             * to the backend here.
+             *
+             * Your exact OrderDTO + OrderDetailDTO +
+             * PaymentDTO fields are needed first.
+             */
+
+
+            console.log(
+                'Ready to create order:',
+                {
+                    customerId:
+                        getCurrentUserId(),
+
+                    items:
+                        cart,
+
+                    paymentMethod:
+                        selectedPayment,
+
+                    total:
+                        getCartTotal()
+
+                }
+            );
+
+
+            alert(
+                'Checkout information is ready. ' +
+                'The Order API connection will be added ' +
+                'using your exact backend DTO.'
+            );
+
+        };
+
+
+    // =========================================================
+    // FETCH ORDERS
+    // =========================================================
+
+    async function fetchMyOrders() {
+
+        const tbody =
+            document.getElementById(
+                'ordersTableBody'
+            );
+
+
+        if (!tbody) {
+            return;
+        }
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="6"
+                    style="text-align:center;padding:25px;">
+
+                    Loading orders...
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        const response =
+            await apiRequest('orders');
+
+
+        const orders =
+            extractList(response);
+
+
+        const userId =
+            getCurrentUserId();
+
+
+        const myOrders =
+            orders.filter(
+                function (order) {
+
+                    return Number(
+                        order.userId
+                    ) === userId;
+
+                }
+            );
+
+
+        tbody.innerHTML = '';
+
+
+        if (myOrders.length === 0) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="6"
+                        style="text-align:center;padding:30px;color:#64748b;">
+
+                        You have no orders yet.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        myOrders.forEach(function (order) {
+
+            const orderId =
+                order.orderId || '-';
+
+
+            const date =
+                order.orderDate || '-';
+
+
+            const table =
+                order.tableNumber ||
+                order.tableId ||
+                '-';
+
+
+            const amount =
+                Number(
+                    order.totalAmount || 0
+                );
+
+
+            const status =
+                order.status ||
+                'Pending';
+
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        #${orderId}
+                    </td>
+
+                    <td>
+                        ${formatDate(date)}
+                    </td>
+
+                    <td>
+                        ${table}
+                    </td>
+
+                    <td>
+                        Rs. ${amount.toFixed(2)}
+                    </td>
+
+                    <td>
+                        <span class="status-badge">
+                            ${escapeHtml(status)}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="viewOrderDetails(${orderId})">
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            View
+
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
         });
 
-        if (response.ok) {
-            alert("Table reserved successfully!");
-            const modalEl = document.getElementById('reservationModal');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if (modal) modal.hide();
-        } else {
-            alert("Failed to reserve table.");
-        }
-    } catch (err) {
-        console.error(err);
-        alert("Error occurred while reserving table!");
+
+        renderRecentOrders(myOrders);
+
+        updateDashboardOrderStats(myOrders);
+
     }
-}
+
+
+    // =========================================================
+    // RECENT ORDERS
+    // =========================================================
+
+    function renderRecentOrders(orders) {
+
+        const tbody =
+            document.getElementById(
+                'recentOrdersTableBody'
+            );
+
+
+        if (!tbody) {
+            return;
+        }
+
+
+        tbody.innerHTML = '';
+
+
+        const recent =
+            orders
+                .slice()
+                .reverse()
+                .slice(0, 5);
+
+
+        if (recent.length === 0) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="4"
+                        style="text-align:center;padding:25px;color:#64748b;">
+
+                        No recent orders.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        recent.forEach(function (order) {
+
+            tbody.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        #${order.orderId || '-'}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            order.orderDate || '-'
+                        )}
+                    </td>
+
+                    <td>
+                        Rs. ${Number(
+                            order.totalAmount || 0
+                        ).toFixed(2)}
+                    </td>
+
+                    <td>
+
+                        <span class="status-badge">
+
+                            ${escapeHtml(
+                                order.status || 'Pending'
+                            )}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+    }
+
+
+    // =========================================================
+    // ORDER STATISTICS
+    // =========================================================
+
+    function updateDashboardOrderStats(orders) {
+
+        const pending =
+            orders.filter(
+                function (order) {
+
+                    const status =
+                        String(
+                            order.status || ''
+                        ).toLowerCase();
+
+
+                    return (
+                        status === 'pending' ||
+                        status === 'processing' ||
+                        status === 'preparing'
+                    );
+
+                }
+            ).length;
+
+
+        const pendingElement =
+            document.getElementById(
+                'dashboard-pending-count'
+            );
+
+
+        if (pendingElement) {
+
+            pendingElement.textContent =
+                pending;
+
+        }
+
+
+        const orderCount =
+            document.getElementById(
+                'dashboard-order-count'
+            );
+
+
+        if (orderCount) {
+
+            orderCount.textContent =
+                orders.length;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // ORDER DETAILS
+    // =========================================================
+
+    window.viewOrderDetails =
+        async function (orderId) {
+
+            const container =
+                document.getElementById(
+                    'orderDetailsContainer'
+                );
+
+
+            const tbody =
+                document.getElementById(
+                    'orderDetailsTableBody'
+                );
+
+
+            if (!container || !tbody) {
+                return;
+            }
+
+
+            container.style.display =
+                'block';
+
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5"
+                        style="text-align:center;padding:20px;">
+
+                        Loading...
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            const response =
+                await apiRequest(
+                    'order-details/order/' +
+                    orderId
+                );
+
+
+            const details =
+                extractList(response);
+
+
+            const title =
+                document.getElementById(
+                    'selectedOrderTitle'
+                );
+
+
+            const info =
+                document.getElementById(
+                    'selectedOrderInfo'
+                );
+
+
+            if (title) {
+
+                title.textContent =
+                    'Order #' +
+                    orderId;
+
+            }
+
+
+            if (info) {
+
+                info.textContent =
+                    'Order details';
+
+            }
+
+
+            tbody.innerHTML = '';
+
+
+            if (details.length === 0) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="5"
+                            style="text-align:center;padding:20px;color:#64748b;">
+
+                            No order details found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+            }
+
+
+            details.forEach(function (detail) {
+
+                const detailId =
+                    detail.orderDetailId ||
+                    detail.id ||
+                    '-';
+
+
+                const itemId =
+                    detail.menuItemId ||
+                    detail.itemId ||
+                    '-';
+
+
+                const quantity =
+                    Number(
+                        detail.quantity || 0
+                    );
+
+
+                const unitPrice =
+                    Number(
+                        detail.unitPrice ||
+                        detail.price ||
+                        0
+                    );
+
+
+                const subtotal =
+                    Number(
+                        detail.subtotal ||
+                        unitPrice * quantity
+                    );
+
+
+                tbody.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${detailId}
+                        </td>
+
+                        <td>
+                            ${itemId}
+                        </td>
+
+                        <td>
+                            ${quantity}
+                        </td>
+
+                        <td>
+                            Rs. ${unitPrice.toFixed(2)}
+                        </td>
+
+                        <td>
+                            Rs. ${subtotal.toFixed(2)}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+        };
+
+
+    window.closeOrderDetails =
+        function () {
+
+            const container =
+                document.getElementById(
+                    'orderDetailsContainer'
+                );
+
+
+            if (container) {
+
+                container.style.display =
+                    'none';
+
+            }
+
+        };
+
+
+    // =========================================================
+    // RESERVATIONS
+    // =========================================================
+
+    async function fetchMyReservations() {
+
+        const tbody =
+            document.getElementById(
+                'reservationTableBody'
+            );
+
+
+        if (!tbody) {
+            return;
+        }
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="5"
+                    style="text-align:center;padding:25px;">
+
+                    Loading reservations...
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        const response =
+            await apiRequest('reservations');
+
+
+        const reservations =
+            extractList(response);
+
+
+        const userId =
+            getCurrentUserId();
+
+
+        const myReservations =
+            reservations.filter(
+                function (reservation) {
+
+                    return Number(
+                        reservation.userId
+                    ) === userId;
+
+                }
+            );
+
+
+        tbody.innerHTML = '';
+
+
+        if (myReservations.length === 0) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td colspan="5"
+                        style="text-align:center;padding:30px;color:#64748b;">
+
+                        You have no reservations yet.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+        }
+
+
+        myReservations.forEach(
+            function (reservation) {
+
+                const id =
+                    reservation.reservationId ||
+                    '-';
+
+
+                const table =
+                    reservation.tableNumber ||
+                    reservation.tableId ||
+                    '-';
+
+
+                const dateTime =
+                    reservation.reservationTime ||
+                    '-';
+
+
+                const status =
+                    reservation.status ||
+                    'Pending';
+
+
+                tbody.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            #${id}
+                        </td>
+
+                        <td>
+                            ${table}
+                        </td>
+
+                        <td>
+                            ${extractDate(dateTime)}
+                        </td>
+
+                        <td>
+                            ${extractTime(dateTime)}
+                        </td>
+
+                        <td>
+
+                            <span class="status-badge">
+
+                                ${escapeHtml(status)}
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        const reservationCount =
+            document.getElementById(
+                'dashboard-reservation-count'
+            );
+
+
+        if (reservationCount) {
+
+            reservationCount.textContent =
+                myReservations.length;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // TABLE SELECTION
+    // =========================================================
+
+    let selectedTableId = null;
+
+
+    window.selectTable =
+        function (element, tableId) {
+
+            document
+                .querySelectorAll('.restaurant-table')
+                .forEach(
+                    function (table) {
+
+                        table.classList.remove(
+                            'selected'
+                        );
+
+                    }
+                );
+
+
+            element.classList.add(
+                'selected'
+            );
+
+
+            selectedTableId =
+                tableId;
+
+
+            console.log(
+                'Selected Table:',
+                selectedTableId
+            );
+
+        };
+
+
+    // =========================================================
+    // CONFIRM RESERVATION
+    // =========================================================
+
+    window.confirmReservation =
+        function () {
+
+            const date =
+                document.getElementById(
+                    'reservationDate'
+                ).value;
+
+
+            const time =
+                document.getElementById(
+                    'reservationTime'
+                ).value;
+
+
+            const guests =
+                document.getElementById(
+                    'guestCount'
+                ).value;
+
+
+            if (!date) {
+
+                alert(
+                    'Please select a reservation date.'
+                );
+
+                return;
+            }
+
+
+            if (!time) {
+
+                alert(
+                    'Please select a reservation time.'
+                );
+
+                return;
+            }
+
+
+            if (!selectedTableId) {
+
+                alert(
+                    'Please select a table.'
+                );
+
+                return;
+            }
+
+
+            if (!guests || Number(guests) < 1) {
+
+                alert(
+                    'Please enter the number of guests.'
+                );
+
+                return;
+            }
+
+
+            /*
+             * Exact ReservationDTO fields are required
+             * before sending POST request.
+             */
+
+
+            console.log(
+                'Reservation ready:',
+                {
+
+                    userId:
+                        getCurrentUserId(),
+
+                    tableId:
+                        selectedTableId,
+
+                    date:
+                        date,
+
+                    time:
+                        time,
+
+                    guests:
+                        Number(guests)
+
+                }
+            );
+
+
+            alert(
+                'Reservation information is ready. ' +
+                'The Reservation API connection will be added ' +
+                'using your exact backend DTO.'
+            );
+
+        };
+
+
+    // =========================================================
+    // SHOW SECTION
+    // =========================================================
+
+    window.showSection =
+        function (sectionId, clickedItem = null) {
+
+            const sections =
+                document.querySelectorAll(
+                    '.content-view, #dashboard-section'
+                );
+
+
+            sections.forEach(
+                function (section) {
+
+                    section.style.display =
+                        'none';
+
+                }
+            );
+
+
+            const selected =
+                document.getElementById(
+                    sectionId
+                );
+
+
+            if (!selected) {
+
+                console.error(
+                    'Section not found:',
+                    sectionId
+                );
+
+                return;
+            }
+
+
+            selected.style.display =
+                'block';
+
+
+            // Active sidebar item
+
+            document
+                .querySelectorAll('.nav-item')
+                .forEach(
+                    function (item) {
+
+                        item.classList.remove(
+                            'active'
+                        );
+
+                    }
+                );
+
+
+            if (clickedItem) {
+
+                clickedItem.classList.add(
+                    'active'
+                );
+
+            }
+
+
+            switch (sectionId) {
+
+                case 'dashboard-section':
+
+                    loadDashboard();
+
+                    break;
+
+
+                case 'menu-section':
+
+                    fetchMenuItems();
+
+                    break;
+
+
+                case 'cart-section':
+
+                    updateCartUI();
+
+                    break;
+
+
+                case 'checkout-section':
+
+                    updateCheckoutSummary();
+
+                    break;
+
+
+                case 'orders-section':
+
+                    fetchMyOrders();
+
+                    break;
+
+
+                case 'reservation-section':
+
+                    fetchMyReservations();
+
+                    break;
+
+
+                case 'profile-section':
+
+                    loadUserInformation();
+
+                    break;
+
+            }
+
+        };
+
+
+    // =========================================================
+    // DASHBOARD
+    // =========================================================
+
+    async function loadDashboard() {
+
+        await Promise.all([
+            fetchMyOrders(),
+            fetchMyReservations()
+        ]);
+
+        updateCartUI();
+
+    }
+
+
+    // =========================================================
+    // CHANGE PASSWORD
+    // =========================================================
+
+    const passwordForm =
+        document.getElementById(
+            'changePasswordForm'
+        );
+
+
+    if (passwordForm) {
+
+        passwordForm.addEventListener(
+            'submit',
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const currentPassword =
+                    document.getElementById(
+                        'currentPassword'
+                    ).value.trim();
+
+
+                const newPassword =
+                    document.getElementById(
+                        'newPassword'
+                    ).value.trim();
+
+
+                const confirmPassword =
+                    document.getElementById(
+                        'confirmPassword'
+                    ).value.trim();
+
+
+                if (
+                    newPassword !==
+                    confirmPassword
+                ) {
+
+                    alert(
+                        'New password and confirm password do not match.'
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !currentPassword ||
+                    !newPassword
+                ) {
+
+                    alert(
+                        'Please fill all password fields.'
+                    );
+
+                    return;
+                }
+
+
+                const userId =
+                    getCurrentUserId();
+
+
+                if (!userId) {
+
+                    alert(
+                        'User ID not found.'
+                    );
+
+                    return;
+                }
+
+
+                const updateData = {
+
+                    userId:
+                        userId,
+
+                    username:
+                        currentUser.username,
+
+                    password:
+                        newPassword,
+
+                    email:
+                        currentUser.email,
+
+                    role:
+                        currentUser.role
+
+                };
+
+
+                const response =
+                    await apiRequest(
+                        'users',
+                        {
+
+                            method: 'PUT',
+
+                            body:
+                                JSON.stringify(
+                                    updateData
+                                )
+
+                        }
+                    );
+
+
+                if (response) {
+
+                    alert(
+                        'Password changed successfully.'
+                    );
+
+                    passwordForm.reset();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =========================================================
+    // LOGOUT
+    // =========================================================
+
+    window.logout =
+        function () {
+
+            localStorage.clear();
+
+            window.location.href =
+                'login.html';
+
+        };
+
+
+    // =========================================================
+    // DATE HELPERS
+    // =========================================================
+
+    function formatDate(date) {
+
+        if (
+            !date ||
+            date === '-'
+        ) {
+            return '-';
+        }
+
+
+        try {
+
+            return new Date(
+                date
+            ).toLocaleDateString();
+
+        } catch (error) {
+
+            return date;
+
+        }
+
+    }
+
+
+    function extractDate(dateTime) {
+
+        if (
+            !dateTime ||
+            dateTime === '-'
+        ) {
+            return '-';
+        }
+
+
+        const value =
+            String(dateTime);
+
+
+        if (value.includes('T')) {
+
+            return value
+                .split('T')[0];
+
+        }
+
+
+        return formatDate(dateTime);
+
+    }
+
+
+    function extractTime(dateTime) {
+
+        if (
+            !dateTime ||
+            dateTime === '-'
+        ) {
+            return '-';
+        }
+
+
+        const value =
+            String(dateTime);
+
+
+        if (value.includes('T')) {
+
+            return value
+                .split('T')[1]
+                .substring(0, 8);
+
+        }
+
+
+        return '-';
+
+    }
+
+
+    // =========================================================
+    // HTML SAFETY
+    // =========================================================
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+    }
+
+
+    function escapeJs(value) {
+
+        return String(value)
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'");
+
+    }
+
+
+    // =========================================================
+    // INITIAL LOAD
+    // =========================================================
+
+    updateCartUI();
+
+    loadDashboard();
+
+});

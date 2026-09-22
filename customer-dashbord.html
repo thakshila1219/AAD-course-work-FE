@@ -1,107 +1,1984 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Portal - POS System</title>
-    <!-- Bootstrap 5 & FontAwesome Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>RESTManager - Customer Dashboard</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .food-card { border: none; border-radius: 12px; transition: 0.3s; }
-        .food-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .cart-drawer { position: fixed; top: 0; right: -400px; width: 380px; height: 100vh; background: #fff; z-index: 1050; transition: 0.3s; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-        .cart-drawer.open { right: 0; }
-        .cart-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 1040; display: none; }
-        .cart-overlay.show { display: block; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            border-right: 1px solid #1e293b;
+            padding: 25px 18px;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 21px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo i {
+            color: #f59e0b;
+            font-size: 24px;
+        }
+
+        .portal-badge {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        .menu-label {
+            margin: 35px 10px 12px;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 10px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .nav-item:hover {
+            background: #1e293b;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #f59e0b;
+            color: #111827;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .logout-item {
+            margin-top: 20px;
+        }
+
+        .logout-item:hover {
+            background: #7f1d1d;
+            color: white;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+        }
+
+        .header-titles h1 {
+            font-size: 30px;
+            color: white;
+            margin-bottom: 7px;
+        }
+
+        .header-titles p {
+            color: #64748b;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .current-time {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #f59e0b;
+            color: #111827;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info strong {
+            color: white;
+        }
+
+        .user-info small {
+            color: #64748b;
+        }
+
+        /* ================= SECTIONS ================= */
+
+        .content-view {
+            display: none;
+        }
+
+        .section {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ================= WELCOME ================= */
+
+        .welcome-box {
+            padding: 28px;
+            border-radius: 18px;
+            background: linear-gradient(
+                    135deg,
+                    #1e293b,
+                    #172033
+            );
+            border: 1px solid #334155;
+            margin-bottom: 25px;
+        }
+
+        .welcome-box h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-box p {
+            color: #94a3b8;
+        }
+
+        /* ================= CARDS ================= */
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 17px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            color: #f59e0b;
+            font-size: 21px;
+        }
+
+        .stat-info span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .stat-info h3 {
+            color: white;
+            font-size: 25px;
+            margin-top: 3px;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 22px;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: #f59e0b;
+        }
+
+        .action-card i {
+            color: #f59e0b;
+            font-size: 25px;
+            margin-bottom: 13px;
+        }
+
+        .action-card h3 {
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .action-card p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ================= PANELS ================= */
+
+        .panel {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 {
+            color: white;
+            font-size: 20px;
+        }
+
+        .panel-header p {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .btn {
+            border: none;
+            border-radius: 9px;
+            padding: 10px 17px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #f59e0b;
+            color: #111827;
+        }
+
+        .btn-primary:hover {
+            background: #fbbf24;
+        }
+
+        .btn-secondary {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
+
+        .btn-danger {
+            background: #7f1d1d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #166534;
+            color: white;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .custom-table th {
+            text-align: left;
+            padding: 14px;
+            color: #64748b;
+            font-size: 12px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .custom-table td {
+            padding: 15px 14px;
+            color: #cbd5e1;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .custom-table tbody tr:hover {
+            background: #172033;
+        }
+
+        /* ================= MENU ================= */
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .food-card {
+            background: #111827;
+            border: 1px solid #1e293b;
+            border-radius: 17px;
+            overflow: hidden;
+            transition: 0.25s;
+        }
+
+        .food-card:hover {
+            transform: translateY(-4px);
+            border-color: #f59e0b;
+        }
+
+        .food-image {
+            height: 150px;
+            background: linear-gradient(
+                    135deg,
+                    #1e293b,
+                    #334155
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+            color: #f59e0b;
+        }
+
+        .food-content {
+            padding: 18px;
+        }
+
+        .food-content h3 {
+            color: white;
+            margin-bottom: 6px;
+        }
+
+        .food-category {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .food-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 17px;
+        }
+
+        .food-price {
+            color: #fbbf24;
+            font-weight: 700;
+        }
+
+        .unavailable {
+            opacity: 0.5;
+        }
+
+        /* ================= CART ================= */
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .cart-item-info h3 {
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-info span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 7px;
+            background: #1e293b;
+            color: white;
+            cursor: pointer;
+        }
+
+        .cart-summary {
+            height: fit-content;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            color: #94a3b8;
+        }
+
+        .summary-total {
+            border-top: 1px solid #334155;
+            margin-top: 10px;
+            padding-top: 17px;
+            font-size: 19px;
+            color: white;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 9px;
+            color: white;
+            outline: none;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #f59e0b;
+        }
+
+        /* ================= PAYMENT ================= */
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .payment-option {
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+        }
+
+        .payment-option:hover {
+            border-color: #f59e0b;
+        }
+
+        .payment-option.selected {
+            border-color: #f59e0b;
+            background: #172033;
+        }
+
+        .payment-option input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .payment-option i {
+            color: #f59e0b;
+            margin-right: 8px;
+        }
+
+        .card-details {
+            display: none;
+            margin-top: 20px;
+        }
+
+        /* ================= TABLE BOOKING ================= */
+
+        .table-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .restaurant-table {
+            padding: 22px 15px;
+            text-align: center;
+            border: 1px solid #334155;
+            border-radius: 13px;
+            cursor: pointer;
+            background: #111827;
+        }
+
+        .restaurant-table i {
+            font-size: 28px;
+            color: #f59e0b;
+            margin-bottom: 10px;
+        }
+
+        .restaurant-table.selected {
+            border-color: #f59e0b;
+            background: #172033;
+        }
+
+        .restaurant-table.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profile-grid {
+            max-width: 650px;
+        }
+
+        /* ================= BADGES ================= */
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #1e293b;
+            color: #fbbf24;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 1100px) {
+
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .table-selection {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 20px 10px;
+            }
+
+            .logo span,
+            .portal-badge,
+            .menu-label,
+            .nav-item span {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .quick-actions,
+            .cart-layout,
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .dashboard-cards,
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-selection {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
     </style>
+
 </head>
+
+
 <body>
 
-    <!-- 1. Customer Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-warning" href="#"><i class="fa-solid fa-utensils me-2"></i>POS Restaurant</a>
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-outline-warning position-relative" id="btnCart">
-                    <i class="fa-solid fa-cart-shopping"></i> My Cart
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartBadge">0</span>
+
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <i class="fa-solid fa-utensils"></i>
+        <span>RESTManager</span>
+    </div>
+
+    <div class="portal-badge">
+        Customer Portal
+    </div>
+
+
+    <div class="menu-label">
+        MAIN MENU
+    </div>
+
+
+    <ul class="nav-links">
+
+        <li class="nav-item active"
+            onclick="showSection('dashboard-section', this)">
+
+            <i class="fa-solid fa-house"></i>
+
+            <span>Dashboard</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('menu-section', this)">
+
+            <i class="fa-solid fa-bowl-food"></i>
+
+            <span>Food Menu</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('cart-section', this)">
+
+            <i class="fa-solid fa-cart-shopping"></i>
+
+            <span>My Cart</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('orders-section', this)">
+
+            <i class="fa-solid fa-receipt"></i>
+
+            <span>My Orders</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('booking-section', this)">
+
+            <i class="fa-solid fa-chair"></i>
+
+            <span>Book a Table</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('reservation-section', this)">
+
+            <i class="fa-solid fa-calendar-check"></i>
+
+            <span>My Reservations</span>
+
+        </li>
+
+
+        <div class="menu-label">
+            ACCOUNT
+        </div>
+
+
+        <li class="nav-item"
+            onclick="showSection('profile-section', this)">
+
+            <i class="fa-solid fa-user"></i>
+
+            <span>My Profile</span>
+
+        </li>
+
+
+        <li class="nav-item"
+            onclick="showSection('password-section', this)">
+
+            <i class="fa-solid fa-lock"></i>
+
+            <span>Change Password</span>
+
+        </li>
+
+
+        <li class="nav-item logout-item"
+            onclick="logout()">
+
+            <i class="fa-solid fa-right-from-bracket"></i>
+
+            <span>Logout</span>
+
+        </li>
+
+    </ul>
+
+</aside>
+
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="main-content">
+
+
+    <!-- TOP HEADER -->
+
+    <header class="top-header">
+
+        <div class="header-titles">
+
+            <h1 id="userWelcomeMsg">
+                Welcome Back!
+            </h1>
+
+            <p>
+                What would you like to have today?
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <div id="current-time"
+                 class="current-time">
+            </div>
+
+
+            <div class="user-profile">
+
+                <div class="user-avatar">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+                <div class="user-info">
+
+                    <strong id="display-user">
+                        Customer
+                    </strong>
+
+                    <small>
+                        Customer
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
+
+    <section id="dashboard-section"
+             class="section">
+
+
+        <div class="welcome-box">
+
+            <h2>
+                Hungry? Let's get you something delicious! 🍽️
+            </h2>
+
+            <p>
+                Browse our menu, add your favourite items to
+                the cart, or reserve a table.
+            </p>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="dashboard-cards">
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-receipt"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>My Orders</span>
+
+                    <h3 id="dashboard-order-count">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>Pending Orders</span>
+
+                    <h3 id="dashboard-pending-count">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>Reservations</span>
+
+                    <h3 id="dashboard-reservation-count">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                </div>
+
+                <div class="stat-info">
+
+                    <span>Cart Items</span>
+
+                    <h3 id="dashboard-cart-count">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- QUICK ACTIONS -->
+
+        <div class="quick-actions">
+
+
+            <div class="action-card"
+                 onclick="showSection('menu-section')">
+
+                <i class="fa-solid fa-bowl-food"></i>
+
+                <h3>Order Food</h3>
+
+                <p>
+                    Explore our menu and order your favourite food.
+                </p>
+
+            </div>
+
+
+            <div class="action-card"
+                 onclick="showSection('cart-section')">
+
+                <i class="fa-solid fa-cart-shopping"></i>
+
+                <h3>View Cart</h3>
+
+                <p>
+                    Review your selected items and checkout.
+                </p>
+
+            </div>
+
+
+            <div class="action-card"
+                 onclick="showSection('booking-section')">
+
+                <i class="fa-solid fa-chair"></i>
+
+                <h3>Book a Table</h3>
+
+                <p>
+                    Reserve a table for your next visit.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RECENT ORDERS -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Recent Orders
+                    </h2>
+
+                    <p>
+                        Your latest food orders
+                    </p>
+
+                </div>
+
+                <button class="btn btn-primary"
+                        onclick="showSection('orders-section')">
+
+                    View All
+
                 </button>
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-user me-1"></i> <span id="loggedUserName">Customer</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#reservationModal"><i class="fa-solid fa-chair me-2"></i>Book a Table</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" id="btnLogout"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a></li>
-                    </ul>
-                </div>
+
             </div>
-        </div>
-    </nav>
 
-    <!-- 2. Main Content: Food Menu for Customer -->
-    <div class="container my-5">
-        <h3 class="fw-bold mb-4">Our Menu</h3>
 
-        <!-- Dynamic Food Items Grid -->
-        <div class="row g-4" id="menuGrid">
-            <!-- Dynamic Data Load Here -->
-        </div>
-    </div>
+            <div class="table-responsive">
 
-    <!-- 3. Side Cart Slide-in Drawer -->
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-drawer p-3 d-flex flex-column" id="cartDrawer">
-        <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
-            <h5 class="m-0"><i class="fa-solid fa-basket-shopping me-2"></i>My Cart</h5>
-            <button class="btn-close" id="btnCloseCart"></button>
-        </div>
-        <div class="cart-items flex-grow-1 overflow-auto my-3" id="cartItemsContainer">
-            <p class="text-muted text-center my-4">Cart is empty</p>
-        </div>
-        <div class="border-top pt-3">
-            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
-                <span>Total Amount:</span>
-                <span class="text-success" id="cartTotal">Rs. 0.00</span>
+                <table class="custom-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Order ID</th>
+
+                        <th>Date</th>
+
+                        <th>Total</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="recentOrdersTableBody">
+                    </tbody>
+
+                </table>
+
             </div>
-            <button class="btn btn-success w-100 py-2 fw-bold" onclick="placeCustomerOrder()">Confirm Order</button>
-        </div>
-    </div>
 
-    <!-- 4. Table Reservation Modal -->
-    <div class="modal fade" id="reservationModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fa-solid fa-chair me-2"></i>Reserve a Table</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="reservationForm">
-                        <div class="mb-3">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-control" id="resDate" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Time</label>
-                            <input type="time" class="form-control" id="resTime" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Guests Count</label>
-                            <input type="number" class="form-control" id="resGuests" min="1" max="10" value="2" required>
-                        </div>
-                        <button type="submit" class="btn btn-warning w-100">Submit Reservation</button>
-                    </form>
-                </div>
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOD MENU
+    ====================================================== -->
+
+    <section id="menu-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    Food Menu 🍔
+                </h2>
+
+                <p>
+                    Choose your favourite food items.
+                </p>
+
             </div>
-        </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script src="js/customer.js"></script>
+        </div>
+
+
+        <div id="menuGrid"
+             class="menu-grid">
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CART
+    ====================================================== -->
+
+    <section id="cart-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    My Cart 🛒
+                </h2>
+
+                <p>
+                    Review your selected food items.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="cart-layout">
+
+
+            <div class="panel">
+
+                <div id="cartItems">
+
+                </div>
+
+            </div>
+
+
+            <div class="panel cart-summary">
+
+                <h2>
+                    Order Summary
+                </h2>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Items
+                    </span>
+
+                    <span id="cartItemCount">
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        Subtotal
+                    </span>
+
+                    <span id="cartSubtotal">
+                        Rs. 0.00
+                    </span>
+
+                </div>
+
+
+                <div class="summary-row summary-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong id="cartTotal">
+                        Rs. 0.00
+                    </strong>
+
+                </div>
+
+
+                <button class="btn btn-primary"
+                        style="width:100%;margin-top:20px;"
+                        onclick="goToCheckout()">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    Proceed to Checkout
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHECKOUT
+    ====================================================== -->
+
+    <section id="checkout-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    Checkout 💳
+                </h2>
+
+                <p>
+                    Select your preferred payment method.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="cart-layout">
+
+
+            <div class="panel">
+
+                <h2>
+                    Payment Method
+                </h2>
+
+
+                <div class="payment-methods">
+
+
+                    <div class="payment-option"
+                         id="cashOption"
+                         onclick="selectPayment('CASH')">
+
+                        <label>
+
+                            <input type="radio"
+                                   name="payment"
+                                   value="CASH">
+
+                            <i class="fa-solid fa-money-bill-wave"></i>
+
+                            Cash
+
+                        </label>
+
+                        <p style="color:#64748b;font-size:12px;margin-top:8px;">
+                            Pay with cash at the restaurant.
+                        </p>
+
+                    </div>
+
+
+                    <div class="payment-option"
+                         id="cardOption"
+                         onclick="selectPayment('CARD')">
+
+                        <label>
+
+                            <input type="radio"
+                                   name="payment"
+                                   value="CARD">
+
+                            <i class="fa-solid fa-credit-card"></i>
+
+                            Card
+
+                        </label>
+
+                        <p style="color:#64748b;font-size:12px;margin-top:8px;">
+                            Pay using your card.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div id="cardDetails"
+                     class="card-details">
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Card Number
+                        </label>
+
+                        <input type="text"
+                               id="cardNumber"
+                               placeholder="1234 5678 9012 3456">
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                Expiry Date
+                            </label>
+
+                            <input type="text"
+                                   placeholder="MM/YY">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                CVV
+                            </label>
+
+                            <input type="password"
+                                   maxlength="3"
+                                   placeholder="***">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button class="btn btn-primary"
+                        onclick="confirmOrder()">
+
+                    <i class="fa-solid fa-check"></i>
+
+                    Confirm Order
+
+                </button>
+
+            </div>
+
+
+            <div class="panel cart-summary">
+
+                <h2>
+                    Order Total
+                </h2>
+
+
+                <div id="checkoutSummary">
+
+                </div>
+
+
+                <div class="summary-row summary-total">
+
+                    <span>
+                        Total
+                    </span>
+
+                    <strong id="checkoutTotal">
+                        Rs. 0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ORDERS
+    ====================================================== -->
+
+    <section id="orders-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    My Orders 📦
+                </h2>
+
+                <p>
+                    View your order history.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="table-responsive">
+
+                <table class="custom-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Order ID</th>
+
+                        <th>Date</th>
+
+                        <th>Table</th>
+
+                        <th>Total</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="ordersTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <div id="orderDetailsContainer"
+             class="panel"
+             style="display:none;">
+
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2 id="selectedOrderTitle">
+                        Order Details
+                    </h2>
+
+                    <p id="selectedOrderInfo">
+                    </p>
+
+                </div>
+
+
+                <button class="btn btn-danger"
+                        onclick="closeOrderDetails()">
+
+                    Close
+
+                </button>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table class="custom-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Detail ID</th>
+
+                        <th>Item ID</th>
+
+                        <th>Quantity</th>
+
+                        <th>Unit Price</th>
+
+                        <th>Subtotal</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="orderDetailsTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         BOOK TABLE
+    ====================================================== -->
+
+    <section id="booking-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    Book a Table 🪑
+                </h2>
+
+                <p>
+                    Reserve a table for your visit.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Reservation Date
+                    </label>
+
+                    <input type="date"
+                           id="reservationDate">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Reservation Time
+                    </label>
+
+                    <input type="time"
+                           id="reservationTime">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Number of Guests
+                    </label>
+
+                    <input type="number"
+                           id="guestCount"
+                           min="1"
+                           value="2">
+
+                </div>
+
+            </div>
+
+
+            <h3 style="color:white;margin:20px 0 12px;">
+                Select a Table
+            </h3>
+
+
+            <div id="tableSelection"
+                 class="table-selection">
+
+
+                <div class="restaurant-table"
+                     onclick="selectTable(this, 1)">
+
+                    <i class="fa-solid fa-chair"></i>
+
+                    <h4>
+                        Table 01
+                    </h4>
+
+                    <small>
+                        2 Seats
+                    </small>
+
+                </div>
+
+
+                <div class="restaurant-table"
+                     onclick="selectTable(this, 2)">
+
+                    <i class="fa-solid fa-chair"></i>
+
+                    <h4>
+                        Table 02
+                    </h4>
+
+                    <small>
+                        4 Seats
+                    </small>
+
+                </div>
+
+
+                <div class="restaurant-table"
+                     onclick="selectTable(this, 3)">
+
+                    <i class="fa-solid fa-chair"></i>
+
+                    <h4>
+                        Table 03
+                    </h4>
+
+                    <small>
+                        4 Seats
+                    </small>
+
+                </div>
+
+
+                <div class="restaurant-table"
+                     onclick="selectTable(this, 4)">
+
+                    <i class="fa-solid fa-chair"></i>
+
+                    <h4>
+                        Table 04
+                    </h4>
+
+                    <small>
+                        6 Seats
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <button class="btn btn-primary"
+                    style="margin-top:25px;"
+                    onclick="confirmReservation()">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                Book Table
+
+            </button>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESERVATIONS
+    ====================================================== -->
+
+    <section id="reservation-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    My Reservations 📅
+                </h2>
+
+                <p>
+                    View your table reservation history.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <div class="table-responsive">
+
+                <table class="custom-table">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Reservation ID</th>
+
+                        <th>Table</th>
+
+                        <th>Date</th>
+
+                        <th>Time</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody id="reservationTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         PROFILE
+    ====================================================== -->
+
+    <section id="profile-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    My Profile 👤
+                </h2>
+
+                <p>
+                    Your account information.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel profile-grid">
+
+            <div class="form-group">
+
+                <label>
+                    Username
+                </label>
+
+                <input id="profileName"
+                       readonly>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Email
+                </label>
+
+                <input id="profileEmail"
+                       readonly>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Role
+                </label>
+
+                <input id="profileRole"
+                       readonly>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CHANGE PASSWORD
+    ====================================================== -->
+
+    <section id="password-section"
+             class="content-view section">
+
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2>
+                    Change Password 🔐
+                </h2>
+
+                <p>
+                    Update your account password.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel profile-grid">
+
+            <form id="changePasswordForm">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Current Password
+                    </label>
+
+                    <input type="password"
+                           id="currentPassword"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        New Password
+                    </label>
+
+                    <input type="password"
+                           id="newPassword"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Confirm New Password
+                    </label>
+
+                    <input type="password"
+                           id="confirmPassword"
+                           required>
+
+                </div>
+
+
+                <button class="btn btn-primary"
+                        type="submit">
+
+                    <i class="fa-solid fa-key"></i>
+
+                    Change Password
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script src="js/customer.js"></script>
+
 </body>
+
 </html>
