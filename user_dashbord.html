@@ -1,191 +1,1686 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RESTManager - User Dashboard</title>
+
+    <title>RESTManager - Staff Dashboard</title>
 
     <!-- Modern Font & FontAwesome Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CSS Link -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Existing CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <div class="app-container">
-        
-        <!-- User Sidebar Navigation (Admin Layout Structure) -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>REST<span class="text-primary">Manager</span></h2>
-                <span class="badge badge-admin"><i class="fa-solid fa-user"></i> User Portal</span>
+
+<div class="app-container">
+
+    <!-- ========================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>
+                REST<span class="text-primary">Manager</span>
+            </h2>
+
+            <span class="badge badge-admin">
+                <i class="fa-solid fa-user-tie"></i>
+                Staff Portal
+            </span>
+
+        </div>
+
+
+        <div class="sidebar-menu-wrapper">
+
+            <!-- MAIN NAVIGATION -->
+
+            <span class="menu-label">
+                Main Navigation
+            </span>
+
+            <ul class="nav-links">
+
+                <li class="nav-item active"
+                    onclick="showDashboard()">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Dashboard Overview
+
+                </li>
+
+            </ul>
+
+
+            <!-- RESTAURANT SERVICES -->
+
+            <span class="menu-label">
+                Restaurant Services
+            </span>
+
+            <ul class="nav-links">
+
+                <!-- Food Menu -->
+
+                <li class="nav-item"
+                    id="btnViewMenu"
+                    onclick="showSection('menu-section')">
+
+                    <i class="fa-solid fa-utensils"></i>
+
+                    Food Menu
+
+                </li>
+
+
+                <!-- Orders -->
+
+                <li class="nav-item"
+                    id="btnViewOrders"
+                    onclick="showSection('orders-section')">
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    Customer Orders
+
+                </li>
+
+
+                <!-- Reservations -->
+
+                <li class="nav-item"
+                    onclick="showSection('reservation-section')">
+
+                    <i class="fa-solid fa-calendar-check"></i>
+
+                    Table Reservations
+
+                </li>
+
+
+                <!-- Customers -->
+
+                <li class="nav-item"
+                    onclick="showSection('customers-section')">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Customers
+
+                </li>
+
+            </ul>
+
+
+            <!-- STAFF OPERATIONS -->
+
+            <span class="menu-label">
+                Staff Operations
+            </span>
+
+            <ul class="nav-links">
+
+                <!-- Inventory -->
+
+                <li class="nav-item"
+                    onclick="showSection('inventory-section')">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    Inventory
+
+                </li>
+
+
+                <!-- Payments -->
+
+                <li class="nav-item"
+                    onclick="showSection('payments-section')">
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    Payments
+
+                </li>
+
+            </ul>
+
+
+            <!-- ACCOUNT -->
+
+            <span class="menu-label">
+                Account
+            </span>
+
+            <ul class="nav-links">
+
+                <!-- Profile -->
+
+                <li class="nav-item"
+                    onclick="showSection('profile-section')">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    My Profile
+
+                </li>
+
+
+                <!-- Password -->
+
+                <li class="nav-item"
+                    onclick="showSection('password-section')">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    Change Password
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================================= -->
+
+    <main class="main-content">
+
+
+        <!-- ===================================================== -->
+        <!-- TOP HEADER -->
+        <!-- ===================================================== -->
+
+        <header class="top-header">
+
+            <div class="header-titles">
+
+                <h1 id="userWelcomeMsg">
+                    Welcome Back, Staff!
+                </h1>
+
+                <p id="page-subtitle">
+                    Manage restaurant orders, reservations, customers and daily operations
+                </p>
+
             </div>
 
-            <div class="sidebar-menu-wrapper">
-                <span class="menu-label">Main Navigation</span>
-                <ul class="nav-links">
-                    <li class="nav-item active" onclick="showDashboard()">
-                        <i class="fa-solid fa-chart-line"></i> Dashboard Overview
-                    </li>
-                </ul>
 
-                <span class="menu-label">Restaurant Services</span>
-                <ul class="nav-links">
-                    <li class="nav-item" id="btnViewMenu" onclick="showSection('menu-section')">
-                        <i class="fa-solid fa-utensils"></i> Food Menu Catalog
-                    </li>
-                    <li class="nav-item" id="btnViewOrders" onclick="showSection('orders-section')">
-                        <i class="fa-solid fa-cart-shopping"></i> Customer Orders
-                    </li>
-                </ul>
-            </div>
-        </aside>
+            <div class="header-actions">
 
-        <!-- User Main Content Area -->
-        <main class="main-content">
-            
-            <!-- Top Bar Header (Admin Structure) -->
-            <header class="top-header">
-                <div class="header-titles">
-                    <h1 id="userWelcomeMsg">Welcome Back, User!</h1>
-                    <p id="page-subtitle">Manage restaurant food menus, table reservations, and customer orders</p>
-                </div>
-                <div class="header-actions">
-                    <span id="current-time" style="color: #94a3b8; font-size: 14px; margin-right: 10px;"></span>
-                    <div class="user-profile">
-                        <img src="https://ui-avatars.com/api/?name=User&background=38bdf8&color=fff" alt="User Avatar">
-                        <div class="user-info">
-                            <span class="user-name" id="display-user">User Account</span>
-                            <span class="user-role badge-admin-text">user</span>
-                        </div>
+                <!-- Current Time -->
+
+                <span id="current-time"
+                      style="
+                      color:#94a3b8;
+                      font-size:14px;
+                      margin-right:10px;">
+                </span>
+
+
+                <!-- User Profile -->
+
+                <div class="user-profile">
+
+                    <img
+                        src="https://ui-avatars.com/api/?name=Staff&background=38bdf8&color=fff"
+                        alt="Staff Avatar">
+
+                    <div class="user-info">
+
+                        <span class="user-name"
+                              id="display-user">
+                            Staff Account
+                        </span>
+
+                        <span class="user-role badge-admin-text">
+                            staff
+                        </span>
+
                     </div>
-                    <button class="btn btn-danger" id="btnLogout" onclick="logout()">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+
+                </div>
+
+
+                <!-- Logout -->
+
+                <button
+                    class="btn btn-danger"
+                    id="btnLogout"
+                    onclick="logout()">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ===================================================== -->
+        <!-- ALERT -->
+        <!-- ===================================================== -->
+
+        <div id="alert-msg"
+             style="
+             display:none;
+             padding:12px;
+             margin:15px 20px 0 20px;
+             border-radius:6px;
+             text-align:center;
+             font-size:14px;">
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- CONTENT SECTIONS -->
+        <!-- ===================================================== -->
+
+        <div class="content-sections"
+             style="padding:20px;">
+
+
+            <!-- ================================================= -->
+            <!-- 1. STAFF DASHBOARD -->
+            <!-- ================================================= -->
+
+            <section
+                id="dashboard-section"
+                class="section active-section fade-in main-dashboard-view">
+
+
+                <!-- DASHBOARD CARDS -->
+
+                <div class="dashboard-cards">
+
+
+                    <!-- TOTAL ORDERS -->
+
+                    <div class="card glass-card">
+
+                        <div class="card-icon icon-orange">
+
+                            <i class="fa-solid fa-receipt"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Today's Orders
+                            </h3>
+
+                            <p id="dashboard-order-count">
+                                0
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PENDING ORDERS -->
+
+                    <div class="card glass-card">
+
+                        <div class="card-icon icon-blue">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Pending Orders
+                            </h3>
+
+                            <p id="dashboard-pending-count">
+                                0
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- COMPLETED ORDERS -->
+
+                    <div class="card glass-card">
+
+                        <div class="card-icon icon-green">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Completed Orders
+                            </h3>
+
+                            <p id="dashboard-completed-count">
+                                0
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SALES -->
+
+                    <div class="card glass-card">
+
+                        <div class="card-icon icon-purple">
+
+                            <i class="fa-solid fa-money-bill-wave"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Today's Sales
+                            </h3>
+
+                            <p id="dashboard-sales">
+                                Rs. 0.00
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- QUICK ACTIONS -->
+                <!-- ================================================= -->
+
+                <div
+                    class="dashboard-cards"
+                    style="
+                    margin-top:25px;
+                    grid-template-columns:
+                    repeat(auto-fit,minmax(250px,1fr));">
+
+
+                    <!-- MENU -->
+
+                    <div
+                        class="card glass-card"
+                        style="cursor:pointer;"
+                        onclick="showSection('menu-section')">
+
+                        <div class="card-icon icon-purple">
+
+                            <i class="fa-solid fa-utensils"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Food Menu
+                            </h3>
+
+                            <p style="
+                            font-size:13px;
+                            color:#94a3b8;
+                            margin-top:4px;">
+
+                                View available food items and prices.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ORDERS -->
+
+                    <div
+                        class="card glass-card"
+                        style="cursor:pointer;"
+                        onclick="showSection('orders-section')">
+
+                        <div class="card-icon icon-orange">
+
+                            <i class="fa-solid fa-cart-shopping"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Customer Orders
+                            </h3>
+
+                            <p style="
+                            font-size:13px;
+                            color:#94a3b8;
+                            margin-top:4px;">
+
+                                View and manage customer orders.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- RESERVATIONS -->
+
+                    <div
+                        class="card glass-card"
+                        style="cursor:pointer;"
+                        onclick="showSection('reservation-section')">
+
+                        <div class="card-icon icon-blue">
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Reservations
+                            </h3>
+
+                            <p style="
+                            font-size:13px;
+                            color:#94a3b8;
+                            margin-top:4px;">
+
+                                Check today's table reservations.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INVENTORY -->
+
+                    <div
+                        class="card glass-card"
+                        style="cursor:pointer;"
+                        onclick="showSection('inventory-section')">
+
+                        <div class="card-icon icon-green">
+
+                            <i class="fa-solid fa-boxes-stacked"></i>
+
+                        </div>
+
+                        <div class="card-info">
+
+                            <h3>
+                                Inventory
+                            </h3>
+
+                            <p style="
+                            font-size:13px;
+                            color:#94a3b8;
+                            margin-top:4px;">
+
+                                Monitor stock and low-stock items.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- RECENT ORDERS + LOW STOCK -->
+                <!-- ================================================= -->
+
+                <div
+                    style="
+                    display:grid;
+                    grid-template-columns:
+                    repeat(auto-fit,minmax(450px,1fr));
+                    gap:20px;
+                    margin-top:25px;">
+
+
+                    <!-- RECENT ORDERS -->
+
+                    <div class="table-panel glass-panel">
+
+                        <h2>
+
+                            <i class="fa-solid fa-cart-shopping text-primary"></i>
+
+                            Recent Orders
+
+                        </h2>
+
+                        <p style="
+                        color:#94a3b8;
+                        font-size:14px;
+                        margin-bottom:20px;">
+
+                            Latest customer orders.
+
+                        </p>
+
+
+                        <table class="custom-table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>
+                                    Order ID
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody id="recentOrdersTableBody">
+
+                            <!-- Dynamic data -->
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- LOW STOCK -->
+
+                    <div class="table-panel glass-panel">
+
+                        <h2>
+
+                            <i class="fa-solid fa-boxes-stacked text-primary"></i>
+
+                            Low Stock Items
+
+                        </h2>
+
+                        <p style="
+                        color:#94a3b8;
+                        font-size:14px;
+                        margin-bottom:20px;">
+
+                            Items that need stock attention.
+
+                        </p>
+
+
+                        <table class="custom-table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>
+                                    Item
+                                </th>
+
+                                <th>
+                                    Available
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+                            <tbody id="lowStockTableBody">
+
+                            <!-- Dynamic data -->
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- TODAY'S RESERVATIONS -->
+                <!-- ================================================= -->
+
+                <div
+                    class="table-panel glass-panel"
+                    style="margin-top:25px;">
+
+                    <h2>
+
+                        <i class="fa-solid fa-calendar-check text-primary"></i>
+
+                        Today's Reservations
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        View today's table reservations.
+
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Reservation ID
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Table
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="todayReservationsTableBody">
+
+                        <!-- Dynamic data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 2. FOOD MENU -->
+            <!-- ================================================= -->
+
+            <section
+                id="menu-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
                     </button>
+
                 </div>
-            </header>
 
-            <!-- Notification Alert Message -->
-            <div id="alert-msg" style="display: none; padding: 12px; margin: 15px 20px 0 20px; border-radius: 6px; text-align: center; font-size: 14px;"></div>
 
-            <!-- Dynamic Views Container -->
-            <div class="content-sections" style="padding: 20px;">
-                
-                <!-- 1. USER MAIN DASHBOARD VIEW -->
-                <section id="dashboard-section" class="section active-section fade-in main-dashboard-view">
-                    
-                    <!-- Metrics Cards Grid -->
-                    <div class="dashboard-cards">
-                        <div class="card glass-card">
-                            <div class="card-icon icon-orange"><i class="fa-solid fa-receipt"></i></div>
-                            <div class="card-info">
-                                <h3>Total Orders</h3>
-                                <p id="dashboard-order-count">0</p>
-                            </div>
-                        </div>
+                <div class="table-panel glass-panel">
 
-                        <div class="card glass-card">
-                            <div class="card-icon icon-green"><i class="fa-solid fa-chair"></i></div>
-                            <div class="card-info">
-                                <h3>Dining Tables</h3>
-                                <p id="dashboard-table-count">0</p>
-                            </div>
-                        </div>
+                    <h2>
 
-                        <div class="card glass-card">
-                            <div class="card-icon icon-blue"><i class="fa-solid fa-calendar-check"></i></div>
-                            <div class="card-info">
-                                <h3>Reservations</h3>
-                                <p id="dashboard-res-count">0</p>
-                            </div>
-                        </div>
-                    </div>
+                        <i class="fa-solid fa-utensils text-primary"></i>
 
-                    <!-- Quick Navigation Action Cards -->
-                    <div class="dashboard-cards" style="margin-top: 25px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
-                        <div class="card glass-card" style="cursor: pointer;" onclick="showSection('menu-section')">
-                            <div class="card-icon icon-purple"><i class="fa-solid fa-burger"></i></div>
-                            <div class="card-info">
-                                <h3>Restaurant Menu</h3>
-                                <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Browse food items, drinks and catalog pricing.</p>
-                            </div>
-                        </div>
+                        Food Menu
 
-                        <div class="card glass-card" style="cursor: pointer;" onclick="showSection('orders-section')">
-                            <div class="card-icon icon-orange"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <div class="card-info">
-                                <h3>Orders Management</h3>
-                                <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Track active orders, billing and order status.</p>
-                            </div>
-                        </div>
-                    </div>
+                    </h2>
 
-                </section>
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
 
-                <!-- 2. RESTAURANT MENU SECTION -->
-                <section id="menu-section" class="section fade-in content-view" style="display: none;">
-                    <div style="margin-bottom: 15px;">
-                        <button class="btn btn-primary" onclick="showDashboard()">
-                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                        </button>
-                    </div>
+                        View available restaurant food items and pricing.
 
-                    <div class="table-panel glass-panel">
-                        <h2><i class="fa-solid fa-utensils text-primary"></i> Restaurant Menu Catalog</h2>
-                        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Explore all available food items, beverages, and pricing.</p>
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Item ID
+                            </th>
+
+                            <th>
+                                Food Item
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Availability
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="menuTableBody">
+
+                        <!-- Dynamic Menu Data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 3. CUSTOMER ORDERS -->
+            <!-- ================================================= -->
+
+            <section
+                id="orders-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <!-- CUSTOMER ORDERS TABLE -->
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-cart-shopping text-primary"></i>
+
+                        Customer Orders
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        View customer orders and their details.
+
+                    </p>
+
+
+                    <div style="overflow-x:auto;">
 
                         <table class="custom-table">
+
                             <thead>
-                                <tr>
-                                    <th>Item ID</th>
-                                    <th>Food Item Name</th>
-                                    <th>Price</th>
-                                </tr>
+
+                            <tr>
+
+                                <th>
+                                    Order ID
+                                </th>
+
+                                <th>
+                                    Customer
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Total Amount
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
                             </thead>
-                            <tbody id="menuTableBody">
-                                <!-- Dynamic Restaurant Menu Data -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
 
-                <!-- 3. RESTAURANT ORDERS SECTION -->
-                <section id="orders-section" class="section fade-in content-view" style="display: none;">
-                    <div style="margin-bottom: 15px;">
-                        <button class="btn btn-primary" onclick="showDashboard()">
-                            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                        </button>
-                    </div>
-
-                    <div class="table-panel glass-panel">
-                        <h2><i class="fa-solid fa-cart-shopping text-primary"></i> Customer Orders</h2>
-                        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">View all active and completed restaurant orders.</p>
-
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Customer</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
                             <tbody id="ordersTableBody">
-                                <!-- Dynamic Orders Data -->
+
+                            <tr>
+
+                                <td colspan="6"
+                                    style="
+                                    padding:20px;
+                                    text-align:center;
+                                    color:#94a3b8;">
+
+                                    Loading orders...
+
+                                </td>
+
+                            </tr>
+
                             </tbody>
+
                         </table>
+
                     </div>
-                </section>
 
-            </div>
-        </main>
-    </div>
+                </div>
 
-    <!-- JS Link -->
-    <script src="js/main.js"></script>
+
+                <!-- ================================================= -->
+                <!-- SELECTED ORDER DETAILS -->
+                <!-- ================================================= -->
+
+                <div
+                    id="orderDetailsContainer"
+                    class="table-panel glass-panel"
+                    style="
+                    display:none;
+                    margin-top:25px;">
+
+
+                    <!-- DETAILS HEADER -->
+
+                    <div
+                        style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:15px;
+                        margin-bottom:20px;
+                        flex-wrap:wrap;">
+
+
+                        <div>
+
+                            <h2>
+
+                                <i class="fa-solid fa-list-check text-primary"></i>
+
+                                <span id="selectedOrderTitle">
+                                    Order Details
+                                </span>
+
+                            </h2>
+
+
+                            <p
+                                id="selectedOrderInfo"
+                                style="
+                                color:#94a3b8;
+                                font-size:14px;
+                                margin-top:6px;">
+
+                                Select an order to view details.
+
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="closeOrderDetails()">
+
+                            <i class="fa-solid fa-xmark"></i>
+
+                            Close
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- ORDER DETAILS TABLE -->
+
+                    <div style="overflow-x:auto;">
+
+                        <table class="custom-table">
+
+                            <thead>
+
+                            <tr>
+
+                                <th>
+                                    Order Detail ID
+                                </th>
+
+                                <th>
+                                    Menu Item ID
+                                </th>
+
+                                <th>
+                                    Quantity
+                                </th>
+
+                                <th>
+                                    Unit Price
+                                </th>
+
+                                <th>
+                                    Subtotal
+                                </th>
+
+                            </tr>
+
+                            </thead>
+
+
+                            <tbody id="orderDetailsTableBody">
+
+                            <tr>
+
+                                <td colspan="5"
+                                    style="
+                                    padding:20px;
+                                    text-align:center;
+                                    color:#94a3b8;">
+
+                                    Select an order to view details.
+
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 4. TABLE RESERVATIONS -->
+            <!-- ================================================= -->
+
+            <section
+                id="reservation-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-calendar-check text-primary"></i>
+
+                        Table Reservations
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        Manage customer table reservations.
+
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Reservation ID
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Table
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="reservationTableBody">
+
+                        <!-- Dynamic Reservation Data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 5. CUSTOMERS -->
+            <!-- ================================================= -->
+
+            <section
+                id="customers-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-users text-primary"></i>
+
+                        Customers
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        View registered customer information.
+
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Customer ID
+                            </th>
+
+                            <th>
+                                Customer Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Orders
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="customersTableBody">
+
+                        <!-- Dynamic Customer Data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 6. INVENTORY -->
+            <!-- ================================================= -->
+
+            <section
+                id="inventory-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-boxes-stacked text-primary"></i>
+
+                        Inventory
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        Monitor available stock and inventory status.
+
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Item ID
+                            </th>
+
+                            <th>
+                                Item Name
+                            </th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Quantity
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="inventoryTableBody">
+
+                        <!-- Dynamic Inventory Data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 7. PAYMENTS -->
+            <!-- ================================================= -->
+
+            <section
+                id="payments-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-credit-card text-primary"></i>
+
+                        Payments
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:20px;">
+
+                        View customer payment information and payment status.
+
+                    </p>
+
+
+                    <table class="custom-table">
+
+                        <thead>
+
+                        <tr>
+
+                            <th>
+                                Payment ID
+                            </th>
+
+                            <th>
+                                Order ID
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Payment Method
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="paymentsTableBody">
+
+                        <!-- Dynamic Payment Data -->
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 8. MY PROFILE -->
+            <!-- ================================================= -->
+
+            <section
+                id="profile-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div class="table-panel glass-panel">
+
+                    <h2>
+
+                        <i class="fa-solid fa-user text-primary"></i>
+
+                        My Profile
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:25px;">
+
+                        View your staff account information.
+
+                    </p>
+
+
+                    <div
+                        style="
+                        display:grid;
+                        grid-template-columns:
+                        repeat(auto-fit,minmax(250px,1fr));
+                        gap:20px;">
+
+
+                        <div>
+
+                            <label>
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profileName"
+                                class="form-control"
+                                readonly>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="profileEmail"
+                                class="form-control"
+                                readonly>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Phone
+                            </label>
+
+                            <input
+                                type="text"
+                                id="profilePhone"
+                                class="form-control"
+                                readonly>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Role
+                            </label>
+
+                            <input
+                                type="text"
+                                value="Staff"
+                                class="form-control"
+                                readonly>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- 9. CHANGE PASSWORD -->
+            <!-- ================================================= -->
+
+            <section
+                id="password-section"
+                class="section fade-in content-view"
+                style="display:none;">
+
+                <div style="margin-bottom:15px;">
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="showDashboard()">
+
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to Dashboard
+
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="table-panel glass-panel"
+                    style="max-width:600px;">
+
+                    <h2>
+
+                        <i class="fa-solid fa-lock text-primary"></i>
+
+                        Change Password
+
+                    </h2>
+
+                    <p style="
+                    color:#94a3b8;
+                    font-size:14px;
+                    margin-bottom:25px;">
+
+                        Update your staff account password.
+
+                    </p>
+
+
+                    <form id="changePasswordForm">
+
+
+                        <div style="margin-bottom:20px;">
+
+                            <label>
+                                Current Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                class="form-control"
+                                placeholder="Enter current password">
+
+                        </div>
+
+
+                        <div style="margin-bottom:20px;">
+
+                            <label>
+                                New Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="newPassword"
+                                class="form-control"
+                                placeholder="Enter new password">
+
+                        </div>
+
+
+                        <div style="margin-bottom:20px;">
+
+                            <label>
+                                Confirm New Password
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                class="form-control"
+                                placeholder="Confirm new password">
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-key"></i>
+
+                            Update Password
+
+                        </button>
+
+
+                    </form>
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================= -->
+
+<script src="js/main.js"></script>
+
 </body>
 
 </html>
+```
