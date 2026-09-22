@@ -918,119 +918,111 @@ document.addEventListener('DOMContentLoaded', function () {
     // FOOD MENU
     // =========================================================
 
-    async function fetchMenuItems() {
+   // =========================================================
+// FOOD MENU
+// =========================================================
 
-        const tbody =
-            document.getElementById(
-                'menuTableBody'
-            );
+async function fetchMenuItems() {
 
+    const tbody =
+        document.getElementById('menuTableBody');
 
-        if (!tbody) return;
+    if (!tbody) return;
 
+    tbody.innerHTML =
+        '<tr>' +
+        '<td colspan="5" style="text-align:center;padding:20px;">' +
+        'Loading menu...' +
+        '</td>' +
+        '</tr>';
+
+    // IMPORTANT:
+    // Backend endpoint = /v1/menu-item
+    // BASE_URL already = http://localhost:8082/v1
+    const response =
+        await apiRequest('menu-item');
+
+    console.log('Menu API Response:', response);
+
+    const items =
+        extractList(response);
+
+    console.log('Menu Items:', items);
+
+    tbody.innerHTML = '';
+
+    if (items.length === 0) {
 
         tbody.innerHTML =
             '<tr>' +
-            '<td colspan="5" style="text-align:center;padding:20px;">' +
-            'Loading menu...' +
+            '<td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">' +
+            'No menu items found.' +
             '</td>' +
             '</tr>';
 
-
-        const response =
-            await apiRequest('menu-items');
-
-
-        const items =
-            extractList(response);
-
-
-        console.log(
-            'Menu Items:',
-            items
-        );
-
-
-        tbody.innerHTML = '';
-
-
-        if (items.length === 0) {
-
-            tbody.innerHTML =
-                '<tr>' +
-                '<td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">' +
-                'No menu items found.' +
-                '</td>' +
-                '</tr>';
-
-            return;
-        }
-
-
-        items.forEach(function (item) {
-
-            const id =
-                item.itemId ||
-                item.menuItemId ||
-                item.id ||
-                '-';
-
-
-            const name =
-                item.itemName ||
-                item.menuItemName ||
-                item.name ||
-                '-';
-
-
-            const category =
-                item.categoryName ||
-                item.category ||
-                item.categoryId ||
-                '-';
-
-
-            const price =
-                Number(
-                    item.price ||
-                    item.unitPrice ||
-                    0
-                );
-
-
-            const availability =
-                item.availability ??
-                item.available ??
-                true;
-
-
-            tbody.innerHTML +=
-
-                '<tr>' +
-
-                '<td>' +
-                id +
-                '</td>' +
-
-                '<td>' +
-                name +
-                '</td>' +
-
-                '<td>' +
-                category +
-                '</td>' +
-
-                '<td>Rs. ' +
-                price.toFixed(2) +
-                '</td>' +
-
-                '<td>' +
-                (availability ? 'Available' : 'Unavailable') +
-                '</td>' +
-
-                '</tr>';
-        });
+        return;
     }
+
+    items.forEach(function (item) {
+
+        const id =
+            item.itemId ||
+            item.menuItemId ||
+            item.id ||
+            '-';
+
+        const name =
+            item.itemName ||
+            item.menuItemName ||
+            item.name ||
+            '-';
+
+        const category =
+            item.categoryName ||
+            item.category ||
+            item.categoryId ||
+            '-';
+
+        const price =
+            Number(
+                item.price ||
+                item.unitPrice ||
+                0
+            );
+
+        const availability =
+            item.availability ??
+            item.available ??
+            true;
+
+        tbody.innerHTML +=
+            '<tr>' +
+
+            '<td>' +
+            id +
+            '</td>' +
+
+            '<td>' +
+            name +
+            '</td>' +
+
+            '<td>' +
+            category +
+            '</td>' +
+
+            '<td>Rs. ' +
+            price.toFixed(2) +
+            '</td>' +
+
+            '<td>' +
+            (availability
+                ? 'Available'
+                : 'Unavailable') +
+            '</td>' +
+
+            '</tr>';
+    });
+}
 
 
     // =========================================================
@@ -1716,126 +1708,112 @@ document.addEventListener('DOMContentLoaded', function () {
     // PAYMENTS
     // =========================================================
 
-    async function fetchPayments() {
+ // =========================================================
+// PAYMENTS
+// =========================================================
 
-        const tbody =
-            document.getElementById(
-                'paymentsTableBody'
-            );
+// =========================================================
+// PAYMENTS
+// =========================================================
 
+async function fetchPayments() {
 
-        if (!tbody) return;
+    const tbody =
+        document.getElementById('paymentsTableBody');
 
+    if (!tbody) return;
+
+    tbody.innerHTML =
+        '<tr>' +
+        '<td colspan="6" style="text-align:center;padding:20px;">' +
+        'Loading payments...' +
+        '</td>' +
+        '</tr>';
+
+    const response =
+        await apiRequest('payments');
+
+    console.log('Payment API Response:', response);
+
+    const payments =
+        extractList(response);
+
+    console.log('Payments:', payments);
+
+    tbody.innerHTML = '';
+
+    if (payments.length === 0) {
 
         tbody.innerHTML =
             '<tr>' +
-            '<td colspan="6" style="text-align:center;padding:20px;">' +
-            'Loading payments...' +
+            '<td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">' +
+            'No payment records found.' +
             '</td>' +
             '</tr>';
 
-
-        const response =
-            await apiRequest('payments');
-
-
-        const payments =
-            extractList(response);
-
-
-        console.log(
-            'Payments:',
-            payments
-        );
-
-
-        tbody.innerHTML = '';
-
-
-        if (payments.length === 0) {
-
-            tbody.innerHTML =
-                '<tr>' +
-                '<td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">' +
-                'No payment records found.' +
-                '</td>' +
-                '</tr>';
-
-            return;
-        }
-
-
-        payments.forEach(function (payment) {
-
-            const id =
-                payment.paymentId ||
-                payment.id ||
-                '-';
-
-
-            const orderId =
-                payment.orderId ||
-                '-';
-
-
-            const customer =
-                payment.customerName ||
-                payment.customer ||
-                payment.customerId ||
-                '-';
-
-
-            const amount =
-                Number(
-                    payment.amount ||
-                    payment.totalAmount ||
-                    0
-                );
-
-
-            const method =
-                payment.paymentMethod ||
-                payment.method ||
-                '-';
-
-
-            const status =
-                payment.status ||
-                'Pending';
-
-
-            tbody.innerHTML +=
-
-                '<tr>' +
-
-                '<td>' +
-                id +
-                '</td>' +
-
-                '<td>' +
-                orderId +
-                '</td>' +
-
-                '<td>' +
-                customer +
-                '</td>' +
-
-                '<td>Rs. ' +
-                amount.toFixed(2) +
-                '</td>' +
-
-                '<td>' +
-                method +
-                '</td>' +
-
-                '<td>' +
-                status +
-                '</td>' +
-
-                '</tr>';
-        });
+        return;
     }
 
+    payments.forEach(function (payment) {
+
+        const paymentId =
+            payment.paymentId || '-';
+
+        const orderId =
+            payment.orderId || '-';
+
+        const amount =
+            Number(payment.amount || 0);
+
+        const paymentDate =
+            payment.paymentDate || '-';
+
+        const paymentMethod =
+            payment.paymentMethod || '-';
+
+        const status =
+            'Paid';
+
+        tbody.innerHTML +=
+
+            '<tr>' +
+
+            // Payment ID
+            '<td>' +
+            paymentId +
+            '</td>' +
+
+            // Order ID
+            '<td>' +
+            orderId +
+            '</td>' +
+
+            // Amount
+            '<td>' +
+            'Rs. ' +
+            amount.toFixed(2) +
+            '</td>' +
+
+            // Payment Date
+            '<td>' +
+            formatDate(paymentDate) +
+            '</td>' +
+
+            // Payment Method
+            '<td>' +
+            paymentMethod +
+            '</td>' +
+
+            // Status
+            '<td>' +
+            '<span class="status-badge">' +
+            status +
+            '</span>' +
+            '</td>' +
+
+            '</tr>';
+    });
+}
 
     // =========================================================
     // DATE FORMAT
@@ -1929,4 +1907,3 @@ function logout() {
         'login.html';
 }
 
-//\\
