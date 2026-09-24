@@ -1175,6 +1175,13 @@ async function loadUsers() {
         renderUsers(users);
 
 
+        // IMPORTANT:
+        // Populate reservation customer dropdown
+        populateReservationUserDropdown(
+            reservationUsers
+        );
+
+
     } catch (error) {
 
         console.error(
@@ -1897,13 +1904,11 @@ async function saveCategory() {
         return;
     }
 
-    // Backend DTO එකේ property name = categoryName
     const category = {
         categoryName: categoryName,
         description: description
     };
 
-    // Edit කරනවා නම් ID එකත් send කරන්න
     if (id) {
         category.categoryId = Number(id);
     }
@@ -1937,7 +1942,6 @@ async function saveCategory() {
                 : "Category saved successfully."
         );
 
-        // Edit state reset
         editingCategoryId = null;
 
         clearForm("form-category");
@@ -1959,6 +1963,7 @@ async function saveCategory() {
     }
 }
 
+
 // ============================================================
 // EDIT CATEGORY
 // ============================================================
@@ -1977,11 +1982,6 @@ async function editCategory(id) {
             );
 
 
-        /*
-         * If category is not available
-         * in current JavaScript array,
-         * load categories again.
-         */
         if (!category) {
 
             const response =
@@ -2125,14 +2125,6 @@ async function deleteCategory(id) {
 
     try {
 
-        /*
-         * Controller:
-         *
-         * @DeleteMapping("/{categoryId}")
-         *
-         * Therefore ID must be included
-         * in the URL.
-         */
         const response =
             await fetch(
                 `${BASE_URL}/api/v1/categories/${id}`,
@@ -2769,7 +2761,26 @@ async function loadDiningTables() {
         renderDiningTables(tables);
 
 
-        await loadReservationUsers();
+        // IMPORTANT:
+        // Populate reservation table dropdown
+        populateReservationTableDropdown(
+            reservationTables
+        );
+
+
+        /*
+         * Users are already loaded by loadUsers().
+         * Still call this as fallback in case the users
+         * array is empty.
+         */
+        if (
+            !Array.isArray(reservationUsers) ||
+            reservationUsers.length === 0
+        ) {
+
+            await loadReservationUsers();
+
+        }
 
 
     } catch (error) {
@@ -3265,6 +3276,18 @@ async function loadReservationUsers() {
             extractArray(data);
 
 
+        console.log(
+            "Reservation users loaded:",
+            reservationUsers
+        );
+
+
+        // IMPORTANT FIX
+        populateReservationUserDropdown(
+            reservationUsers
+        );
+
+
     } catch (error) {
 
         console.error(
@@ -3273,6 +3296,152 @@ async function loadReservationUsers() {
         );
 
     }
+
+}
+
+
+// ============================================================
+// POPULATE RESERVATION USER DROPDOWN
+// ============================================================
+
+function populateReservationUserDropdown(users) {
+
+    const select =
+        document.getElementById(
+            "reservation-user"
+        );
+
+
+    if (!select) {
+
+        console.error(
+            "#reservation-user not found."
+        );
+
+        return;
+
+    }
+
+
+    select.innerHTML = `
+        <option value="">
+            Select Customer
+        </option>
+    `;
+
+
+    if (
+        !Array.isArray(users) ||
+        users.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    users.forEach(user => {
+
+        const userId =
+            user.userId ??
+            user.id ??
+            "";
+
+
+        const username =
+            user.username ??
+            user.name ??
+            user.email ??
+            `User #${userId}`;
+
+
+        if (
+            userId !== "" &&
+            Number(userId) > 0
+        ) {
+
+            select.innerHTML += `
+                <option value="${escapeHtml(userId)}">
+                    ${escapeHtml(username)}
+                </option>
+            `;
+
+        }
+
+    });
+
+}
+
+
+// ============================================================
+// POPULATE RESERVATION TABLE DROPDOWN
+// ============================================================
+
+function populateReservationTableDropdown(tables) {
+
+    const select =
+        document.getElementById(
+            "reservation-table"
+        );
+
+
+    if (!select) {
+
+        console.error(
+            "#reservation-table not found."
+        );
+
+        return;
+
+    }
+
+
+    select.innerHTML = `
+        <option value="">
+            Select Table
+        </option>
+    `;
+
+
+    if (
+        !Array.isArray(tables) ||
+        tables.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    tables.forEach(table => {
+
+        const tableId =
+            table.tableId ??
+            table.id ??
+            "";
+
+
+        const tableNumber =
+            table.tableNumber ??
+            table.number ??
+            table.name ??
+            `Table #${tableId}`;
+
+
+        if (
+            tableId !== "" &&
+            Number(tableId) > 0
+        ) {
+
+            select.innerHTML += `
+                <option value="${escapeHtml(tableId)}">
+                    ${escapeHtml(tableNumber)}
+                </option>
+            `;
+
+        }
+
+    });
 
 }
 
@@ -3489,7 +3658,10 @@ function findUserName(userId) {
     const user =
         reservationUsers.find(
             u =>
-                Number(u.userId) ===
+                Number(
+                    u.userId ??
+                    u.id
+                ) ===
                 Number(userId)
         );
 
@@ -3531,8 +3703,6 @@ function findTableNumber(tableId) {
 
 // ============================================================
 // EDIT RESERVATION
-// IMPORTANT:
-// Backend DOES NOT have GET /v1/reservations/{id}
 // ============================================================
 
 async function editReservation(id) {
@@ -3558,6 +3728,12 @@ async function editReservation(id) {
             return;
 
         }
+
+
+        console.log(
+            "Editing reservation:",
+            reservation
+        );
 
 
         editingReservationId =
@@ -3594,6 +3770,10 @@ async function editReservation(id) {
             );
 
 
+        // ----------------------------------------------------
+        // RESERVATION ID
+        // ----------------------------------------------------
+
         if (idField) {
 
             idField.value =
@@ -3602,57 +3782,143 @@ async function editReservation(id) {
         }
 
 
+        // ----------------------------------------------------
+        // USER
+        // ----------------------------------------------------
+
+        const reservationUserId =
+            Number(
+                reservation.userId ?? 0
+            );
+
+
         if (userField) {
 
+            /*
+             * Make sure user dropdown has options.
+             */
             if (
-                userField.tagName ===
-                "SELECT"
+                userField.options.length <= 1
+            ) {
+
+                if (
+                    Array.isArray(
+                        reservationUsers
+                    ) &&
+                    reservationUsers.length > 0
+                ) {
+
+                    populateReservationUserDropdown(
+                        reservationUsers
+                    );
+
+                } else {
+
+                    await loadReservationUsers();
+
+                }
+
+            }
+
+
+            /*
+             * IMPORTANT:
+             * Because the <select> now contains
+             * the user options, this value will
+             * actually select the correct customer.
+             */
+            if (
+                reservationUserId > 0
             ) {
 
                 userField.value =
-                    reservation.userId ?? "";
+                    String(
+                        reservationUserId
+                    );
+
+                userField.dataset.userId =
+                    String(
+                        reservationUserId
+                    );
 
             } else {
 
-                userField.value =
-                    reservation.username ||
-                    reservation.userId ||
-                    "";
+                userField.value = "";
 
-
-                userField.dataset.userId =
-                    reservation.userId ?? "";
+                delete userField.dataset.userId;
 
             }
 
         }
+
+
+        // ----------------------------------------------------
+        // TABLE
+        // ----------------------------------------------------
+
+        const reservationTableId =
+            Number(
+                reservation.tableId ?? 0
+            );
 
 
         if (tableField) {
 
+            /*
+             * Make sure table dropdown has options.
+             */
             if (
-                tableField.tagName ===
-                "SELECT"
+                tableField.options.length <= 1
+            ) {
+
+                if (
+                    Array.isArray(
+                        reservationTables
+                    ) &&
+                    reservationTables.length > 0
+                ) {
+
+                    populateReservationTableDropdown(
+                        reservationTables
+                    );
+
+                } else {
+
+                    await loadDiningTables();
+
+                }
+
+            }
+
+
+            if (
+                reservationTableId > 0
             ) {
 
                 tableField.value =
-                    reservation.tableId ?? "";
+                    String(
+                        reservationTableId
+                    );
+
+                tableField.dataset.tableId =
+                    String(
+                        reservationTableId
+                    );
 
             } else {
 
-                tableField.value =
-                    reservation.tableNumber ||
-                    reservation.tableId ||
-                    "";
+                tableField.value = "";
 
-
-                tableField.dataset.tableId =
-                    reservation.tableId ?? "";
+                delete tableField.dataset.tableId;
 
             }
 
         }
 
+
+        // ----------------------------------------------------
+        // RESERVATION TIME
+        // ----------------------------------------------------
 
         if (timeField) {
 
@@ -3664,6 +3930,10 @@ async function editReservation(id) {
         }
 
 
+        // ----------------------------------------------------
+        // STATUS
+        // ----------------------------------------------------
+
         if (statusField) {
 
             statusField.value =
@@ -3672,6 +3942,35 @@ async function editReservation(id) {
 
         }
 
+
+        // ----------------------------------------------------
+        // DEBUG
+        // ----------------------------------------------------
+
+        console.log(
+            "Reservation edit values:",
+            {
+                reservationId:
+                    reservation.reservationId,
+
+                userId:
+                    reservationUserId,
+
+                tableId:
+                    reservationTableId,
+
+                reservationTime:
+                    reservation.reservationTime,
+
+                status:
+                    reservation.status
+            }
+        );
+
+
+        // ----------------------------------------------------
+        // BUTTONS
+        // ----------------------------------------------------
 
         const updateBtn =
             document.getElementById(
@@ -3700,6 +3999,10 @@ async function editReservation(id) {
 
         }
 
+
+        // ----------------------------------------------------
+        // SCROLL TO FORM
+        // ----------------------------------------------------
 
         const form =
             document.getElementById(
@@ -3775,66 +4078,75 @@ async function updateReservation() {
             );
 
 
+        // ----------------------------------------------------
+        // RESERVATION ID
+        // ----------------------------------------------------
+
         const reservationId =
             Number(
                 idField?.value || 0
             );
 
 
-        let userId = 0;
+        // ----------------------------------------------------
+        // USER ID
+        // ----------------------------------------------------
 
-        let tableId = 0;
+        let userId =
+            Number(
+                userField?.value || 0
+            );
 
 
-        if (userField) {
+        /*
+         * Backup:
+         * If select value is empty, use dataset.userId.
+         */
+        if (
+            (!Number.isFinite(userId) ||
+             userId <= 0) &&
+            userField?.dataset.userId
+        ) {
 
-            if (
-                userField.tagName ===
-                "SELECT"
-            ) {
-
-                userId =
-                    Number(
-                        userField.value
-                    );
-
-            } else {
-
-                userId =
-                    Number(
-                        userField.dataset.userId ||
-                        userField.value
-                    );
-
-            }
+            userId =
+                Number(
+                    userField.dataset.userId
+                );
 
         }
 
 
-        if (tableField) {
+        // ----------------------------------------------------
+        // TABLE ID
+        // ----------------------------------------------------
 
-            if (
-                tableField.tagName ===
-                "SELECT"
-            ) {
+        let tableId =
+            Number(
+                tableField?.value || 0
+            );
 
-                tableId =
-                    Number(
-                        tableField.value
-                    );
 
-            } else {
+        /*
+         * Backup:
+         * If select value is empty, use dataset.tableId.
+         */
+        if (
+            (!Number.isFinite(tableId) ||
+             tableId <= 0) &&
+            tableField?.dataset.tableId
+        ) {
 
-                tableId =
-                    Number(
-                        tableField.dataset.tableId ||
-                        tableField.value
-                    );
-
-            }
+            tableId =
+                Number(
+                    tableField.dataset.tableId
+                );
 
         }
 
+
+        // ----------------------------------------------------
+        // OTHER VALUES
+        // ----------------------------------------------------
 
         const reservationTime =
             timeField?.value || "";
@@ -3844,7 +4156,41 @@ async function updateReservation() {
             statusField?.value || "";
 
 
-        if (!reservationId) {
+        // ----------------------------------------------------
+        // DEBUG
+        // ----------------------------------------------------
+
+        console.log(
+            "Reservation update values:",
+            {
+                reservationId:
+                    reservationId,
+
+                userId:
+                    userId,
+
+                tableId:
+                    tableId,
+
+                reservationTime:
+                    reservationTime,
+
+                status:
+                    status
+            }
+        );
+
+
+        // ----------------------------------------------------
+        // VALIDATION
+        // ----------------------------------------------------
+
+        if (
+            !Number.isFinite(
+                reservationId
+            ) ||
+            reservationId <= 0
+        ) {
 
             showAlert(
                 "Invalid reservation ID.",
@@ -3866,6 +4212,11 @@ async function updateReservation() {
                 "error"
             );
 
+            console.error(
+                "Invalid reservation user ID:",
+                userId
+            );
+
             return;
 
         }
@@ -3879,6 +4230,11 @@ async function updateReservation() {
             showAlert(
                 "Valid Table ID is required.",
                 "error"
+            );
+
+            console.error(
+                "Invalid reservation table ID:",
+                tableId
             );
 
             return;
@@ -3910,6 +4266,10 @@ async function updateReservation() {
         }
 
 
+        // ----------------------------------------------------
+        // PAYLOAD
+        // ----------------------------------------------------
+
         const payload = {
 
             reservationId:
@@ -3936,6 +4296,10 @@ async function updateReservation() {
         );
 
 
+        // ----------------------------------------------------
+        // API REQUEST
+        // ----------------------------------------------------
+
         const response =
             await fetch(
                 `${BASE_URL}/v1/reservations`,
@@ -3953,6 +4317,12 @@ async function updateReservation() {
             await parseResponse(response);
 
 
+        console.log(
+            "Reservation update response:",
+            result
+        );
+
+
         if (!response.ok) {
 
             throw new Error(
@@ -3962,10 +4332,25 @@ async function updateReservation() {
         }
 
 
-        showAlert(
-            "Reservation updated successfully.",
-            "success"
-        );
+        // ----------------------------------------------------
+        // SUCCESS
+        // ----------------------------------------------------
+
+        if (status === "CONFIRMED") {
+
+            showAlert(
+                "Reservation confirmed successfully.",
+                "success"
+            );
+
+        } else {
+
+            showAlert(
+                "Reservation updated successfully.",
+                "success"
+            );
+
+        }
 
 
         clearForm(

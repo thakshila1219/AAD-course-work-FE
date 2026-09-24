@@ -10,6 +10,8 @@
 
     <title>RESTManager - Customer Dashboard</title>
 
+    <link rel="stylesheet" href="chatbot.css">
+
     <link rel="preconnect"
           href="https://fonts.googleapis.com">
 
@@ -1595,226 +1597,244 @@
     ====================================================== -->
 
     <section id="booking-section"
-             class="content-view section">
+         class="content-view section">
+
+    <div class="panel-header">
+
+        <div>
+
+            <h2>
+                Book a Table 🪑
+            </h2>
+
+            <p>
+                Select your preferred date,
+                time and table.
+            </p>
+
+        </div>
+
+    </div>
 
 
-        <div class="panel-header">
+    <div class="panel">
 
-            <div>
+        <div class="form-grid">
 
-                <h2>
-                    Book a Table 🪑
-                </h2>
+            <div class="form-group">
 
-                <p>
-                    Reserve a table for your visit.
-                </p>
+                <label>
+                    Reservation Date
+                </label>
+
+                <input
+                    type="date"
+                    id="reservationDate"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Reservation Time
+                </label>
+
+                <input
+                    type="time"
+                    id="reservationTime"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Number of Guests
+                </label>
+
+                <input
+                    type="number"
+                    id="guestCount"
+                    min="1"
+                    value="2"
+                    required
+                >
 
             </div>
 
         </div>
 
 
-        <div class="panel">
+        <h3 style="color:white;margin:20px 0 12px;">
+            Select a Table
+        </h3>
 
 
-            <div class="form-grid">
+        <div id="tableSelection"
+             class="table-selection">
 
 
-                <div class="form-group">
+            <div class="restaurant-table"
+                 onclick="selectTable(this, 1)">
 
-                    <label>
-                        Reservation Date
-                    </label>
+                <i class="fa-solid fa-chair"></i>
 
-                    <input type="date"
-                           id="reservationDate">
+                <h4>
+                    Table 01
+                </h4>
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Reservation Time
-                    </label>
-
-                    <input type="time"
-                           id="reservationTime">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Number of Guests
-                    </label>
-
-                    <input type="number"
-                           id="guestCount"
-                           min="1"
-                           value="2">
-
-                </div>
+                <small>
+                    2 Seats
+                </small>
 
             </div>
 
 
-            <h3 style="color:white;margin:20px 0 12px;">
-                Select a Table
-            </h3>
+            <div class="restaurant-table"
+                 onclick="selectTable(this, 2)">
 
+                <i class="fa-solid fa-chair"></i>
 
-            <div id="tableSelection"
-                 class="table-selection">
+                <h4>
+                    Table 02
+                </h4>
 
-
-                <div class="restaurant-table"
-                     onclick="selectTable(this, 1)">
-
-                    <i class="fa-solid fa-chair"></i>
-
-                    <h4>
-                        Table 01
-                    </h4>
-
-                    <small>
-                        2 Seats
-                    </small>
-
-                </div>
-
-
-                <div class="restaurant-table"
-                     onclick="selectTable(this, 2)">
-
-                    <i class="fa-solid fa-chair"></i>
-
-                    <h4>
-                        Table 02
-                    </h4>
-
-                    <small>
-                        4 Seats
-                    </small>
-
-                </div>
-
-
-                <div class="restaurant-table"
-                     onclick="selectTable(this, 3)">
-
-                    <i class="fa-solid fa-chair"></i>
-
-                    <h4>
-                        Table 03
-                    </h4>
-
-                    <small>
-                        4 Seats
-                    </small>
-
-                </div>
-
-
-                <div class="restaurant-table"
-                     onclick="selectTable(this, 4)">
-
-                    <i class="fa-solid fa-chair"></i>
-
-                    <h4>
-                        Table 04
-                    </h4>
-
-                    <small>
-                        6 Seats
-                    </small>
-
-                </div>
+                <small>
+                    4 Seats
+                </small>
 
             </div>
 
 
-            <button class="btn btn-primary"
-                    style="margin-top:25px;"
-                    onclick="confirmReservation()">
+            <div class="restaurant-table"
+                 onclick="selectTable(this, 3)">
 
-                <i class="fa-solid fa-calendar-check"></i>
+                <i class="fa-solid fa-chair"></i>
 
-                Book Table
+                <h4>
+                    Table 03
+                </h4>
 
-            </button>
+                <small>
+                    4 Seats
+                </small>
+
+            </div>
+
+
+            <div class="restaurant-table"
+                 onclick="selectTable(this, 4)">
+
+                <i class="fa-solid fa-chair"></i>
+
+                <h4>
+                    Table 04
+                </h4>
+
+                <small>
+                    6 Seats
+                </small>
+
+            </div>
 
 
         </div>
 
 
-    </section>
+        <button
+            class="btn btn-primary"
+            style="margin-top:25px;"
+            onclick="confirmReservation()">
 
+            <i class="fa-solid fa-calendar-check"></i>
 
+            Book Table
+
+        </button>
+
+    </div>
+
+</section>
 
     <!-- =====================================================
          RESERVATIONS
     ====================================================== -->
 
-    <section id="reservation-section"
-             class="content-view section">
+    <!-- =====================================================
+     RESERVATIONS
+====================================================== -->
 
+<section id="reservation-section"
+         class="content-view section">
 
-        <div class="panel-header">
+    <div class="panel-header">
 
-            <div>
+        <div>
 
-                <h2>
-                    My Reservations 📅
-                </h2>
+            <h2>
+                My Reservations 📅
+            </h2>
 
-                <p>
-                    View your table reservation history.
-                </p>
-
-            </div>
+            <p>
+                View your table reservation history.
+            </p>
 
         </div>
 
+    </div>
 
-        <div class="panel">
 
-            <div class="table-responsive">
+    <div class="panel">
 
-                <table class="custom-table">
+        <div class="table-responsive">
 
-                    <thead>
+            <table class="custom-table">
+
+                <thead>
 
                     <tr>
 
-                        <th>Reservation ID</th>
+                        <th>
+                            Reservation ID
+                        </th>
 
-                        <th>Table</th>
+                        <th>
+                            Table
+                        </th>
 
-                        <th>Date</th>
+                        <th>
+                            Date
+                        </th>
 
-                        <th>Time</th>
+                        <th>
+                            Time
+                        </th>
 
-                        <th>Status</th>
+                        <th>
+                            Status
+                        </th>
 
                     </tr>
 
-                    </thead>
+                </thead>
 
-                    <tbody id="reservationTableBody">
-                    </tbody>
 
-                </table>
+                <tbody id="reservationTableBody">
 
-            </div>
+                </tbody>
+
+            </table>
 
         </div>
 
+    </div>
 
-    </section>
-
+</section>
 
 
     <!-- =====================================================
@@ -1977,8 +1997,97 @@
 
 
 
+
+
+<main class="main-content">
+
+    <!-- dashboard sections -->
+
+    ...
+
+    <!-- ================= CHATBOT ================= -->
+
+    <button id="chatbotToggle"
+            class="chatbot-toggle"
+            onclick="toggleChatbot()">
+
+        <i class="fas fa-robot"></i>
+
+    </button>
+
+    <div id="chatbotWindow" class="chatbot-window">
+
+        <div class="chatbot-header">
+
+            <div class="chatbot-title">
+
+                <div class="chatbot-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+
+                <div>
+                    <h3>RESTManager Assistant</h3>
+                    <span>Online</span>
+                </div>
+
+            </div>
+
+            <button class="chatbot-close"
+                    onclick="toggleChatbot()">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
+
+        <div id="chatbotMessages"
+             class="chatbot-messages">
+
+            <div class="message bot-message">
+
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+
+                <div class="message-content">
+                    <p>
+                        Hi! 👋 I'm RESTManager Assistant.
+                        <br><br>
+                        Ask me anything about the RESTManager restaurant system.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="chatbot-input-area">
+
+            <input
+                type="text"
+                id="chatbotInput"
+                placeholder="Ask something..."
+                autocomplete="off"
+                onkeydown="handleChatbotKey(event)"
+            >
+
+            <button
+                id="chatbotSendBtn"
+                onclick="sendChatbotMessage()">
+
+                <i class="fas fa-paper-plane"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
 <script src="js/customer.js"></script>
+<script src="js/chatbot.js"></script>
 
 </body>
-
 </html>

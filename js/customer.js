@@ -1875,184 +1875,454 @@ document.addEventListener('DOMContentLoaded', function () {
        RESERVATIONS
        ========================= */
 
-    async function fetchMyReservations() {
+    /* =========================
+   RESERVATIONS
+   ========================= */
 
-        const tbody =
-            document.getElementById(
-                'reservationTableBody'
+async function fetchMyReservations() {
+
+    const tbody =
+        document.getElementById(
+            'reservationTableBody'
+        );
+
+    if (!tbody) {
+        console.error(
+            'reservationTableBody not found.'
+        );
+        return;
+    }
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="5"
+                style="
+                    text-align:center;
+                    padding:25px;
+                ">
+                Loading reservations...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const response =
+            await apiRequest(
+                'reservations'
             );
 
-        if (!tbody) return;
+        console.log(
+            'Reservations API Response:',
+            response
+        );
 
+        const reservations =
+            extractList(response);
+
+        console.log(
+            'All Reservations:',
+            reservations
+        );
+
+        const userId =
+            getCurrentUserId();
+
+        console.log(
+            'Current User ID:',
+            userId
+        );
+
+        const myReservations =
+            reservations.filter(
+                function (reservation) {
+
+                    return Number(
+                        reservation.userId
+                    ) === Number(userId);
+
+                }
+            );
+
+        console.log(
+            'My Reservations:',
+            myReservations
+        );
+
+        tbody.innerHTML = '';
+
+        if (
+            myReservations.length === 0
+        ) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5"
+                        style="
+                            text-align:center;
+                            padding:30px;
+                            color:#64748b;
+                        ">
+
+                        You have no reservations yet.
+
+                    </td>
+                </tr>
+            `;
+
+            updateReservationCount(0);
+
+            return;
+        }
+
+
+        myReservations.forEach(
+            function (reservation) {
+
+                const id =
+                    reservation.reservationId ||
+                    '-';
+
+
+                const table =
+                    reservation.tableNumber ||
+                    (
+                        reservation.tableId
+                            ? 'Table ' +
+                              reservation.tableId
+                            : '-'
+                    );
+
+
+                const dateTime =
+                    reservation.reservationTime ||
+                    '-';
+
+
+                const status =
+                    reservation.status ||
+                    'PENDING';
+
+
+                const statusText =
+                    String(status)
+                        .toUpperCase();
+
+
+                tbody.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            #${id}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                String(table)
+                            )}
+                        </td>
+
+                        <td>
+                            ${extractDate(
+                                dateTime
+                            )}
+                        </td>
+
+                        <td>
+                            ${extractTime(
+                                dateTime
+                            )}
+                        </td>
+
+                        <td>
+
+                            <span class="status-badge">
+                                ${escapeHtml(
+                                    statusText
+                                )}
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        updateReservationCount(
+            myReservations.length
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Failed to load reservations:',
+            error
+        );
 
         tbody.innerHTML = `
             <tr>
-
                 <td colspan="5"
                     style="
                         text-align:center;
-                        padding:25px;
+                        padding:30px;
+                        color:#ef4444;
                     ">
 
-                    Loading reservations...
+                    Failed to load reservations.
 
                 </td>
-
             </tr>
         `;
 
+        updateReservationCount(0);
+
+    }
+}
+
+
+/* =========================
+   RESERVATION COUNT
+   ========================= */
+
+function updateReservationCount(
+    count
+) {
+
+    const reservationCount =
+        document.getElementById(
+            'dashboard-reservation-count'
+        );
+
+    if (reservationCount) {
+
+        reservationCount.textContent =
+            count;
+
+    }
+}
+
+
+/* =========================
+   TABLE SELECTION
+   ========================= */
+
+let selectedTableId = null;
+
+
+window.selectTable =
+    function (
+        element,
+        tableId
+    ) {
+
+        document
+            .querySelectorAll(
+                '.restaurant-table'
+            )
+            .forEach(
+                function (table) {
+
+                    table.classList.remove(
+                        'selected'
+                    );
+
+                }
+            );
+
+
+        element.classList.add(
+            'selected'
+        );
+
+
+        selectedTableId =
+            Number(tableId);
+
+
+        console.log(
+            'Selected Table ID:',
+            selectedTableId
+        );
+
+    };
+
+
+/* =========================
+   CONFIRM RESERVATION
+   ========================= */
+
+window.confirmReservation =
+    async function () {
+
+        const date =
+            document.getElementById(
+                'reservationDate'
+            ).value;
+
+
+        const time =
+            document.getElementById(
+                'reservationTime'
+            ).value;
+
+
+        const guests =
+            document.getElementById(
+                'guestCount'
+            ).value;
+
+
+        /* -------------------------
+           VALIDATION
+           ------------------------- */
+
+        if (!date) {
+
+            alert(
+                'Please select a reservation date.'
+            );
+
+            return;
+        }
+
+
+        if (!time) {
+
+            alert(
+                'Please select a reservation time.'
+            );
+
+            return;
+        }
+
+
+        if (!selectedTableId) {
+
+            alert(
+                'Please select a table.'
+            );
+
+            return;
+        }
+
+
+        if (
+            !guests ||
+            Number(guests) < 1
+        ) {
+
+            alert(
+                'Please enter the number of guests.'
+            );
+
+            return;
+        }
+
+
+        const userId =
+            getCurrentUserId();
+
+
+        if (!userId) {
+
+            alert(
+                'User ID not found. Please login again.'
+            );
+
+            return;
+        }
+
+
+        /* -------------------------
+           CREATE LOCAL DATE TIME
+           ------------------------- */
+
+        const reservationDateTime =
+            date +
+            'T' +
+            time;
+
+
+        console.log(
+            'Reservation Date Time:',
+            reservationDateTime
+        );
+
+
+        /* -------------------------
+           REQUEST BODY
+           ------------------------- */
+
+        const reservationData = {
+
+            reservationTime:
+                reservationDateTime,
+
+            status:
+                'PENDING',
+
+            userId:
+                Number(userId),
+
+            tableId:
+                Number(selectedTableId)
+
+        };
+
+
+        console.log(
+            'Reservation Request:',
+            reservationData
+        );
+
+
+        /* -------------------------
+           SEND TO BACKEND
+           ------------------------- */
 
         try {
 
             const response =
                 await apiRequest(
-                    'reservations'
-                );
+                    'reservations',
+                    {
+                        method: 'POST',
 
-
-            const reservations =
-                extractList(response);
-
-
-            const userId =
-                getCurrentUserId();
-
-
-            const myReservations =
-                reservations.filter(
-                    function (reservation) {
-
-                        return Number(
-                            reservation.userId
-                        ) === userId;
+                        body:
+                            JSON.stringify(
+                                reservationData
+                            )
                     }
                 );
 
 
-            tbody.innerHTML = '';
-
-
-            if (
-                myReservations.length === 0
-            ) {
-
-                tbody.innerHTML = `
-                    <tr>
-
-                        <td colspan="5"
-                            style="
-                                text-align:center;
-                                padding:30px;
-                                color:#64748b;
-                            ">
-
-                            You have no reservations yet.
-
-                        </td>
-
-                    </tr>
-                `;
-
-                return;
-            }
-
-
-            myReservations.forEach(
-                function (reservation) {
-
-                    const id =
-                        reservation.reservationId ||
-                        '-';
-
-
-                    const table =
-                        reservation.tableNumber ||
-                        reservation.tableId ||
-                        '-';
-
-
-                    const dateTime =
-                        reservation.reservationTime ||
-                        '-';
-
-
-                    const status =
-                        reservation.status ||
-                        'Pending';
-
-
-                    tbody.innerHTML += `
-                        <tr>
-
-                            <td>
-                                #${id}
-                            </td>
-
-                            <td>
-                                ${table}
-                            </td>
-
-                            <td>
-                                ${extractDate(
-                                    dateTime
-                                )}
-                            </td>
-
-                            <td>
-                                ${extractTime(
-                                    dateTime
-                                )}
-                            </td>
-
-                            <td>
-
-                                <span class="status-badge">
-
-                                    ${escapeHtml(
-                                        status
-                                    )}
-
-                                </span>
-
-                            </td>
-
-                        </tr>
-                    `;
-                }
+            console.log(
+                'Reservation Save Response:',
+                response
             );
 
 
-            const reservationCount =
-                document.getElementById(
-                    'dashboard-reservation-count'
-                );
+            /* -------------------------
+               SUCCESS
+               ------------------------- */
 
-
-            if (reservationCount) {
-
-                reservationCount.textContent =
-                    myReservations.length;
-            }
-
-        } catch (error) {
-
-            console.error(
-                'Failed to load reservations:',
-                error
+            alert(
+                'Table reservation successfully created.'
             );
-        }
-    }
 
 
-    /* =========================
-       TABLE
-       ========================= */
+            /* -------------------------
+               RESET
+               ------------------------- */
 
-    let selectedTableId = null;
+            selectedTableId = null;
 
-
-    window.selectTable =
-        function (element, tableId) {
 
             document
                 .querySelectorAll(
@@ -2064,116 +2334,58 @@ document.addEventListener('DOMContentLoaded', function () {
                         table.classList.remove(
                             'selected'
                         );
+
                     }
                 );
 
 
-            element.classList.add(
-                'selected'
+            document.getElementById(
+                'reservationDate'
+            ).value = '';
+
+
+            document.getElementById(
+                'reservationTime'
+            ).value = '';
+
+
+            document.getElementById(
+                'guestCount'
+            ).value = '2';
+
+
+            /* -------------------------
+               LOAD NEW DATA
+               ------------------------- */
+
+            await fetchMyReservations();
+
+
+            /* -------------------------
+               SHOW RESERVATION PAGE
+               ------------------------- */
+
+            showSection(
+                'reservation-section'
             );
 
 
-            selectedTableId =
-                tableId;
+        } catch (error) {
 
-
-            console.log(
-                'Selected Table:',
-                selectedTableId
-            );
-        };
-
-
-    window.confirmReservation =
-        function () {
-
-            const date =
-                document.getElementById(
-                    'reservationDate'
-                ).value;
-
-
-            const time =
-                document.getElementById(
-                    'reservationTime'
-                ).value;
-
-
-            const guests =
-                document.getElementById(
-                    'guestCount'
-                ).value;
-
-
-            if (!date) {
-
-                alert(
-                    'Please select a reservation date.'
-                );
-
-                return;
-            }
-
-
-            if (!time) {
-
-                alert(
-                    'Please select a reservation time.'
-                );
-
-                return;
-            }
-
-
-            if (!selectedTableId) {
-
-                alert(
-                    'Please select a table.'
-                );
-
-                return;
-            }
-
-
-            if (
-                !guests ||
-                Number(guests) < 1
-            ) {
-
-                alert(
-                    'Please enter the number of guests.'
-                );
-
-                return;
-            }
-
-
-            console.log(
-                'Reservation ready:',
-                {
-                    userId:
-                        getCurrentUserId(),
-
-                    tableId:
-                        selectedTableId,
-
-                    date:
-                        date,
-
-                    time:
-                        time,
-
-                    guests:
-                        Number(guests)
-                }
+            console.error(
+                'Reservation creation failed:',
+                error
             );
 
 
             alert(
-                'Reservation information is ready.'
+                'Failed to create reservation.\n\n' +
+                error.message
             );
-        };
 
+        }
+
+    };
 
     /* =========================
        SECTION NAVIGATION
@@ -2282,13 +2494,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function loadDashboard() {
 
-        await Promise.all([
-            fetchMyOrders(),
-            fetchMyReservations()
-        ]);
+    await Promise.all([
+        fetchMyOrders(),
+        fetchMyReservations()
+    ]);
 
-        updateCartUI();
-    }
+    updateCartUI();
+}
 
 
     /* =========================
@@ -2576,3 +2788,854 @@ document.addEventListener('DOMContentLoaded', function () {
     loadDashboard();
 
 });
+
+// =====================================================
+// RESTMANAGER CHATBOT
+// Dynamic chatbot using real menu/order/reservation data
+// =====================================================
+
+const CHATBOT_BASE_URL = "http://localhost:8082/v1";
+
+
+// =====================================================
+// CHATBOT TOGGLE
+// =====================================================
+
+function toggleChatbot() {
+
+    const chatbotWindow =
+        document.getElementById("chatbotWindow");
+
+    if (!chatbotWindow) return;
+
+    if (chatbotWindow.style.display === "flex") {
+
+        chatbotWindow.style.display = "none";
+
+    } else {
+
+        chatbotWindow.style.display = "flex";
+
+        const input =
+            document.getElementById("chatbotInput");
+
+        if (input) {
+            input.focus();
+        }
+    }
+}
+
+
+// =====================================================
+// ENTER KEY
+// =====================================================
+
+function handleChatbotKey(event) {
+
+    if (event.key === "Enter") {
+
+        event.preventDefault();
+
+        sendChatbotMessage();
+    }
+}
+
+
+// =====================================================
+// ADD MESSAGE
+// =====================================================
+
+function addChatbotMessage(message, sender) {
+
+    const messages =
+        document.getElementById("chatbotMessages");
+
+    if (!messages) return;
+
+
+    const messageDiv =
+        document.createElement("div");
+
+    messageDiv.className =
+        sender === "user"
+            ? "message user-message"
+            : "message bot-message";
+
+
+    const avatar =
+        document.createElement("div");
+
+    avatar.className = "message-avatar";
+
+
+    const icon =
+        document.createElement("i");
+
+    icon.className =
+        sender === "user"
+            ? "fas fa-user"
+            : "fas fa-robot";
+
+
+    avatar.appendChild(icon);
+
+
+    const content =
+        document.createElement("div");
+
+    content.className = "message-content";
+
+
+    const paragraph =
+        document.createElement("p");
+
+    paragraph.innerHTML =
+        escapeChatbotHTML(message)
+            .replace(/\n/g, "<br>");
+
+
+    content.appendChild(paragraph);
+
+
+    messageDiv.appendChild(avatar);
+
+    messageDiv.appendChild(content);
+
+    messages.appendChild(messageDiv);
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+// =====================================================
+// TYPING
+// =====================================================
+
+function showChatbotTyping() {
+
+    const messages =
+        document.getElementById("chatbotMessages");
+
+    if (!messages) return;
+
+
+    const typing =
+        document.createElement("div");
+
+    typing.id = "chatbotTyping";
+
+    typing.className =
+        "message bot-message";
+
+
+    typing.innerHTML = `
+        <div class="message-avatar">
+            <i class="fas fa-robot"></i>
+        </div>
+
+        <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+
+
+    messages.appendChild(typing);
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+
+
+// =====================================================
+// REMOVE TYPING
+// =====================================================
+
+function removeChatbotTyping() {
+
+    const typing =
+        document.getElementById("chatbotTyping");
+
+    if (typing) {
+        typing.remove();
+    }
+}
+
+
+// =====================================================
+// GET MENU ITEMS
+// =====================================================
+
+async function getChatbotMenuItems() {
+
+    try {
+
+        const token =
+            localStorage.getItem("token");
+
+        if (!token) {
+            return [];
+        }
+
+
+        const authHeader =
+            token.startsWith("Bearer ")
+                ? token
+                : "Bearer " + token.trim();
+
+
+        const response =
+            await fetch(
+                `${CHATBOT_BASE_URL}/menu-item`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization": authHeader,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Chatbot menu API error:",
+                response.status
+            );
+
+            return [];
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /*
+         * API එක array එකක් හෝ
+         * { data: [...] } වගේ response එකක්
+         * return කළත් handle කරන්න.
+         */
+
+        if (Array.isArray(data)) {
+            return data;
+        }
+
+
+        if (Array.isArray(data.data)) {
+            return data.data;
+        }
+
+
+        if (Array.isArray(data.content)) {
+            return data.content;
+        }
+
+
+        return [];
+
+    } catch (error) {
+
+        console.error(
+            "Chatbot menu loading error:",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+// =====================================================
+// FIND FIELD
+// =====================================================
+
+function getMenuField(item, possibleNames) {
+
+    for (const name of possibleNames) {
+
+        if (
+            item[name] !== undefined &&
+            item[name] !== null
+        ) {
+
+            return item[name];
+        }
+    }
+
+    return null;
+}
+
+
+// =====================================================
+// FORMAT PRICE
+// =====================================================
+
+function formatChatbotPrice(price) {
+
+    const number =
+        Number(price);
+
+    if (Number.isNaN(number)) {
+        return price;
+    }
+
+    return `Rs. ${number.toLocaleString("en-LK", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })}`;
+}
+
+
+// =====================================================
+// MENU DATA RESPONSE
+// =====================================================
+
+async function getMenuBasedAnswer(message) {
+
+    const menuItems =
+        await getChatbotMenuItems();
+
+
+    if (!menuItems.length) {
+
+        return "Sorry, I couldn't load the menu data right now. Please try again. 😔";
+    }
+
+
+    const text =
+        message.toLowerCase();
+
+
+    // =================================================
+    // MOST EXPENSIVE
+    // =================================================
+
+    if (
+        text.includes("most expensive") ||
+        text.includes("highest price") ||
+        text.includes("highest priced") ||
+        text.includes("maximum price") ||
+        text.includes("max price") ||
+        text.includes("expensive item")
+    ) {
+
+        const validItems =
+            menuItems
+                .map(item => {
+
+                    const name =
+                        getMenuField(item, [
+                            "itemName",
+                            "menuItemName",
+                            "name"
+                        ]);
+
+                    const price =
+                        getMenuField(item, [
+                            "price",
+                            "unitPrice",
+                            "sellingPrice"
+                        ]);
+
+
+                    return {
+                        name: name,
+                        price: Number(price)
+                    };
+
+                })
+                .filter(item =>
+                    item.name &&
+                    !Number.isNaN(item.price)
+                );
+
+
+        if (!validItems.length) {
+
+            return "I couldn't find valid menu prices.";
+        }
+
+
+        const expensive =
+            validItems.reduce(
+                (max, item) =>
+                    item.price > max.price
+                        ? item
+                        : max
+            );
+
+
+        return `The most expensive menu item is ${expensive.name}, priced at ${formatChatbotPrice(expensive.price)}. 🍽️`;
+    }
+
+
+    // =================================================
+    // CHEAPEST
+    // =================================================
+
+    if (
+        text.includes("cheapest") ||
+        text.includes("lowest price") ||
+        text.includes("least expensive") ||
+        text.includes("cheapest item")
+    ) {
+
+        const validItems =
+            menuItems
+                .map(item => {
+
+                    const name =
+                        getMenuField(item, [
+                            "itemName",
+                            "menuItemName",
+                            "name"
+                        ]);
+
+                    const price =
+                        getMenuField(item, [
+                            "price",
+                            "unitPrice",
+                            "sellingPrice"
+                        ]);
+
+
+                    return {
+                        name: name,
+                        price: Number(price)
+                    };
+
+                })
+                .filter(item =>
+                    item.name &&
+                    !Number.isNaN(item.price)
+                );
+
+
+        if (!validItems.length) {
+
+            return "I couldn't find valid menu prices.";
+        }
+
+
+        const cheapest =
+            validItems.reduce(
+                (min, item) =>
+                    item.price < min.price
+                        ? item
+                        : min
+            );
+
+
+        return `The cheapest menu item is ${cheapest.name}, priced at ${formatChatbotPrice(cheapest.price)}. 💰`;
+    }
+
+
+    // =================================================
+    // SHOW ALL MENU
+    // =================================================
+
+    if (
+        text.includes("menu") ||
+        text.includes("food") ||
+        text.includes("items") ||
+        text.includes("available food")
+    ) {
+
+        let answer =
+            "Here are the available menu items:\n\n";
+
+
+        menuItems.forEach((item, index) => {
+
+            const name =
+                getMenuField(item, [
+                    "itemName",
+                    "menuItemName",
+                    "name"
+                ]);
+
+
+            const price =
+                getMenuField(item, [
+                    "price",
+                    "unitPrice",
+                    "sellingPrice"
+                ]);
+
+
+            if (name) {
+
+                answer +=
+                    `${index + 1}. ${name}`;
+
+                if (
+                    price !== null &&
+                    price !== undefined
+                ) {
+
+                    answer +=
+                        ` - ${formatChatbotPrice(price)}`;
+                }
+
+
+                answer += "\n";
+            }
+        });
+
+
+        return answer.trim();
+    }
+
+
+    // =================================================
+    // PRICE QUESTION
+    // =================================================
+
+    const mentionedItem =
+        menuItems.find(item => {
+
+            const name =
+                getMenuField(item, [
+                    "itemName",
+                    "menuItemName",
+                    "name"
+                ]);
+
+
+            return name &&
+                text.includes(
+                    String(name).toLowerCase()
+                );
+        });
+
+
+    if (
+        mentionedItem &&
+        (
+            text.includes("price") ||
+            text.includes("cost") ||
+            text.includes("how much")
+        )
+    ) {
+
+        const name =
+            getMenuField(
+                mentionedItem,
+                [
+                    "itemName",
+                    "menuItemName",
+                    "name"
+                ]
+            );
+
+
+        const price =
+            getMenuField(
+                mentionedItem,
+                [
+                    "price",
+                    "unitPrice",
+                    "sellingPrice"
+                ]
+            );
+
+
+        return `${name} is priced at ${formatChatbotPrice(price)}. 💰`;
+    }
+
+
+    return null;
+}
+
+
+// =====================================================
+// CHATBOT RESPONSE
+// =====================================================
+
+async function getChatbotResponse(message) {
+
+    const text =
+        message.toLowerCase().trim();
+
+
+    // =================================================
+    // GREETING
+    // =================================================
+
+    if (
+        text === "hi" ||
+        text === "hello" ||
+        text === "hey" ||
+        text.includes("good morning") ||
+        text.includes("good afternoon") ||
+        text.includes("good evening")
+    ) {
+
+        return "Hi! 👋 I'm RESTManager Assistant. How can I help you today?";
+    }
+
+
+    // =================================================
+    // MENU
+    // =================================================
+
+    if (
+        text.includes("menu") ||
+        text.includes("food") ||
+        text.includes("item") ||
+        text.includes("price") ||
+        text.includes("expensive") ||
+        text.includes("cheapest") ||
+        text.includes("cost")
+    ) {
+
+        const menuAnswer =
+            await getMenuBasedAnswer(message);
+
+
+        if (menuAnswer) {
+            return menuAnswer;
+        }
+    }
+
+
+    // =================================================
+    // ORDER
+    // =================================================
+
+    if (
+        text.includes("order") &&
+        !text.includes("my order")
+    ) {
+
+        return "You can place an order from the Menu section. Select your food items, add them to the cart, and continue to checkout. 🛒";
+    }
+
+
+    // =================================================
+    // CART
+    // =================================================
+
+    if (
+        text.includes("cart")
+    ) {
+
+        return "You can check your selected items in the Cart section. 🛒";
+    }
+
+
+    // =================================================
+    // CHECKOUT
+    // =================================================
+
+    if (
+        text.includes("checkout") ||
+        text.includes("check out")
+    ) {
+
+        return "After adding items to your cart, go to Checkout to confirm your order and continue with payment. 💳";
+    }
+
+
+    // =================================================
+    // PAYMENT
+    // =================================================
+
+    if (
+        text.includes("payment") ||
+        text.includes("pay")
+    ) {
+
+        return "You can complete your order payment through the Checkout section. 💳";
+    }
+
+
+    // =================================================
+    // RESERVATION
+    // =================================================
+
+    if (
+        text.includes("reservation") ||
+        text.includes("reserve") ||
+        text.includes("booking") ||
+        text.includes("book a table")
+    ) {
+
+        return "You can make a table reservation from the Reservations section. Select your date, time, and available table. 🪑";
+    }
+
+
+    // =================================================
+    // PROFILE
+    // =================================================
+
+    if (
+        text.includes("profile") ||
+        text.includes("my account")
+    ) {
+
+        return "You can view and update your customer information from the Profile section. 👤";
+    }
+
+
+    // =================================================
+    // PASSWORD
+    // =================================================
+
+    if (
+        text.includes("password") ||
+        text.includes("change password")
+    ) {
+
+        return "You can change your password from the Change Password section. 🔐";
+    }
+
+
+    // =================================================
+    // THANKS
+    // =================================================
+
+    if (
+        text.includes("thank") ||
+        text === "thanks"
+    ) {
+
+        return "You're welcome! 😊";
+    }
+
+
+    // =================================================
+    // BYE
+    // =================================================
+
+    if (
+        text === "bye" ||
+        text.includes("goodbye")
+    ) {
+
+        return "Goodbye! 👋 Have a great day!";
+    }
+
+
+    // =================================================
+    // DEFAULT
+    // =================================================
+
+    return "I can help you with RESTManager menu items, prices, orders, cart, payments, reservations, and your account. 😊";
+}
+
+
+// =====================================================
+// SEND MESSAGE
+// =====================================================
+
+async function sendChatbotMessage() {
+
+    const input =
+        document.getElementById("chatbotInput");
+
+    const sendButton =
+        document.getElementById("chatbotSendBtn");
+
+
+    if (!input) return;
+
+
+    const message =
+        input.value.trim();
+
+
+    if (!message) return;
+
+
+    // User message
+    addChatbotMessage(
+        message,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    if (sendButton) {
+        sendButton.disabled = true;
+    }
+
+
+    showChatbotTyping();
+
+
+    try {
+
+        const response =
+            await getChatbotResponse(message);
+
+
+        /*
+         * Small delay so chatbot
+         * looks natural.
+         */
+        await new Promise(
+            resolve =>
+                setTimeout(resolve, 500)
+        );
+
+
+        removeChatbotTyping();
+
+
+        addChatbotMessage(
+            response,
+            "bot"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Chatbot error:",
+            error
+        );
+
+
+        removeChatbotTyping();
+
+
+        addChatbotMessage(
+            "Sorry, something went wrong while getting the information. 😔",
+            "bot"
+        );
+
+    } finally {
+
+        if (sendButton) {
+            sendButton.disabled = false;
+        }
+
+
+        input.focus();
+    }
+}
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
+
+function escapeChatbotHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        String(text);
+
+    return div.innerHTML;
+}

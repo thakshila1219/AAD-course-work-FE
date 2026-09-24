@@ -1,69 +1,137 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
+
     const signupForm = document.getElementById('signupForm');
 
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function (e) {
-            e.preventDefault();
+    if (!signupForm) {
+        console.error('signupForm not found');
+        return;
+    }
 
-            // Form Inputs වලින් Values ලබා ගැනීම
-            const name = document.getElementById('fullname').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            const alertMsg = document.getElementById('alert-msg');
-            const btnSubmit = document.getElementById('btnSubmit');
+    signupForm.addEventListener('submit', async function (e) {
 
-            // UI Elements Loading State එකට සැකසීම
-            alertMsg.style.display = 'none';
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = 'Creating Account... <i class="fa-solid fa-spinner fa-spin"></i>';
+        e.preventDefault();
 
-            try {
-                // Backend Endpoint Call එක (v1/users/register)
-                // Register Request එක යවන ස්ථානය
-const response = await fetch('http://localhost:8082/v1/users/register', { // හෝ ඔයාගේ Sign Up API URL එක
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-        role: 'CUSTOMER' // <-- මෙන්න මේ පේළිය අනිවාර්යයෙන්ම එකතු කරන්න
-    })
-});
+        const usernameElement = document.getElementById('fullname');
+        const emailElement = document.getElementById('email');
+        const phoneElement = document.getElementById('phoneNumber');
+        const passwordElement = document.getElementById('password');
 
-                const data = await response.json();
+        const alertMsg = document.getElementById('alert-msg');
+        const btnSubmit = document.getElementById('btnSubmit');
 
-                if (response.ok || response.status === 201) {
-                    // Success Message එක පෙන්වීම
-                    alertMsg.style.display = 'block';
-                    alertMsg.style.backgroundColor = '#d4edda';
-                    alertMsg.style.color = '#155724';
-                    alertMsg.innerText = 'Account created successfully! Redirecting to login...';
+        if (!usernameElement || !emailElement || !phoneElement || !passwordElement) {
+            console.error('One or more signup fields are missing.');
+            return;
+        }
 
-                    // Form එක Clear කිරීම
-                    signupForm.reset();
+        const username = usernameElement.value.trim();
+        const email = emailElement.value.trim();
+        const phoneNumber = phoneElement.value.trim();
+        const password = passwordElement.value.trim();
 
-                    // තත්පර 1.5 කින් Login Page එකට Redirect කිරීම
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 1500);
+        console.log('========== SIGNUP START ==========');
+        console.log('Username:', username);
+        console.log('Email:', email);
+        console.log('Phone:', phoneNumber);
 
-                } else {
-                    // Backend එකෙන් error message එකක් ආවොත් ඒක Throw කිරීම
-                    throw new Error(data.message || 'Registration failed');
-                }
-            } catch (error) {
-                // Error එක Alert Box එකේ පෙන්වීම
+        const phonePattern = /^0[0-9]{9}$/;
+
+        if (!phonePattern.test(phoneNumber)) {
+
+            if (alertMsg) {
                 alertMsg.style.display = 'block';
                 alertMsg.style.backgroundColor = '#f8d7da';
                 alertMsg.style.color = '#721c24';
-                alertMsg.innerText = error.message || 'Server connection failed';
-                
-                // Submit Button එක නැවත Normal state එකට පත්කිරීම
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = 'Create Account <i class="fa-solid fa-user-plus"></i>';
+                alertMsg.innerText =
+                    'Please enter a valid Sri Lankan mobile number. Example: 0771234567';
             }
-        });
-    }
+
+            return;
+        }
+
+        if (alertMsg) {
+            alertMsg.style.display = 'none';
+        }
+
+        if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML =
+                'Creating Account... <i class="fa-solid fa-spinner fa-spin"></i>';
+        }
+
+        try {
+
+            const response = await fetch(
+                'http://localhost:8082/v1/users/register',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        phoneNumber: phoneNumber,
+                        password: password,
+                        role: 'CUSTOMER'
+                    })
+                }
+            );
+
+            console.log('Register HTTP Status:', response.status);
+
+            let data = {};
+
+            try {
+                data = await response.json();
+            } catch (error) {
+                console.log('Response has no JSON body.');
+            }
+
+            console.log('Register Response:', data);
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    data.error ||
+                    'Registration failed'
+                );
+            }
+
+            console.log('========== REGISTER SUCCESS ==========');
+
+            if (alertMsg) {
+                alertMsg.style.display = 'block';
+                alertMsg.style.backgroundColor = '#d4edda';
+                alertMsg.style.color = '#155724';
+                alertMsg.innerText =
+                    'Account created successfully! Redirecting to login...';
+            }
+
+            signupForm.reset();
+
+            setTimeout(function () {
+                window.location.href = 'login.html';
+            }, 1500);
+
+        } catch (error) {
+
+            console.error('Registration Error:', error);
+
+            if (alertMsg) {
+                alertMsg.style.display = 'block';
+                alertMsg.style.backgroundColor = '#f8d7da';
+                alertMsg.style.color = '#721c24';
+                alertMsg.innerText =
+                    error.message || 'Server connection failed';
+            }
+
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML =
+                    'Create Account <i class="fa-solid fa-user-plus"></i>';
+            }
+        }
+    });
 });

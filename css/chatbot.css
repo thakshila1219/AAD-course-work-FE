@@ -1,0 +1,598 @@
+/* =====================================================
+   RESTMANAGER CHATBOT
+   Chatbot stays inside the MAIN DASHBOARD AREA
+   Sidebar desktop = 250px
+   Sidebar tablet = 70px
+   ===================================================== */
+
+
+/* =====================================================
+   CHATBOT TOGGLE BUTTON
+   ===================================================== */
+
+/* =====================================================
+   CHATBOT BUTTON
+   ===================================================== */
+
+.chatbot-toggle {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 60px;
+    height: 60px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+
+    z-index: 1100;
+
+    transition: 0.3s;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.08);
+}
+
+
+/* =====================================================
+   CHATBOT WINDOW
+   ===================================================== */
+
+.chatbot-window {
+    position: fixed;
+
+    /*
+       Customer Portal sidebar = 250px
+
+       Dashboard content starts AFTER the sidebar.
+       So chatbot can NEVER enter the sidebar.
+    */
+    left: calc(250px + 30px);
+
+    /*
+       Right side of dashboard
+    */
+    right: 25px;
+
+    bottom: 100px;
+
+    /*
+       IMPORTANT:
+       Don't use max-width: 380px here because
+       we want it to stay properly inside dashboard.
+    */
+    width: 380px;
+    max-width: calc(100vw - 250px - 55px);
+
+    height: 540px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+
+    display: none;
+
+    flex-direction: column;
+
+    overflow: hidden;
+
+    /*
+       Sidebar is z-index 1000.
+       Chatbot is above it, BUT its left position
+       starts after sidebar.
+    */
+    z-index: 1100;
+}
+
+/* =====================================================
+   CLOSE BUTTON
+   ===================================================== */
+
+.chatbot-close {
+    width: 35px;
+    height: 35px;
+
+    min-width: 35px;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.chatbot-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* =====================================================
+   MESSAGES AREA
+   ===================================================== */
+
+.chatbot-messages {
+    flex: 1;
+
+    min-height: 0;
+
+    padding: 18px;
+
+    overflow-y: auto;
+
+    background: #f5f7fb;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+/* Scrollbar */
+
+.chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chatbot-messages::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+.message {
+    display: flex;
+
+    gap: 8px;
+
+    max-width: 90%;
+
+    align-items: flex-end;
+}
+
+
+.bot-message {
+    align-self: flex-start;
+}
+
+
+.user-message {
+    align-self: flex-end;
+
+    flex-direction: row-reverse;
+}
+
+
+/* =====================================================
+   MESSAGE AVATAR
+   ===================================================== */
+
+.message-avatar {
+    width: 34px;
+    height: 34px;
+
+    min-width: 34px;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 14px;
+}
+
+
+.user-message .message-avatar {
+    background: #64748b;
+}
+
+
+/* =====================================================
+   MESSAGE CONTENT
+   ===================================================== */
+
+.message-content {
+    padding: 10px 13px;
+
+    border-radius: 14px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    word-break: break-word;
+
+    max-width: 100%;
+}
+
+
+.bot-message .message-content {
+    background: white;
+
+    color: #1e293b;
+
+    border-top-left-radius: 4px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+
+.user-message .message-content {
+    background: #2563eb;
+
+    color: white;
+
+    border-top-right-radius: 4px;
+}
+
+
+.message-content p {
+    margin: 0;
+}
+
+
+/* =====================================================
+   TYPING INDICATOR
+   ===================================================== */
+
+.typing-dots {
+    background: white;
+
+    padding: 10px 14px;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    gap: 4px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+
+    background: #64748b;
+
+    border-radius: 50%;
+
+    animation: chatbotTyping 1.2s infinite;
+}
+
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
+@keyframes chatbotTyping {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+    }
+
+    30% {
+        transform: translateY(-5px);
+    }
+}
+
+
+/* =====================================================
+   INPUT AREA
+   ===================================================== */
+
+.chatbot-input-area {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 12px;
+
+    background: white;
+
+    border-top: 1px solid #e5e7eb;
+
+    min-height: 66px;
+}
+
+
+#chatbotInput {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 42px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 22px;
+
+    padding: 0 15px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    color: #1e293b;
+
+    background: white;
+}
+
+
+#chatbotInput:focus {
+    border-color: #2563eb;
+
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+#chatbotInput::placeholder {
+    color: #94a3b8;
+}
+
+
+/* =====================================================
+   SEND BUTTON
+   ===================================================== */
+
+#chatbotSendBtn {
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: background 0.2s ease,
+                transform 0.2s ease;
+}
+
+
+#chatbotSendBtn:hover {
+    background: #1d4ed8;
+
+    transform: scale(1.05);
+}
+
+
+#chatbotSendBtn:active {
+    transform: scale(0.95);
+}
+
+
+#chatbotSendBtn:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =====================================================
+   TABLET
+   Sidebar = 70px
+   ===================================================== */
+
+@media (max-width: 800px) {
+
+    .chatbot-window {
+        /*
+           Sidebar = 70px
+           15px gap after sidebar
+        */
+        left: 85px;
+
+        right: 15px;
+
+        bottom: 90px;
+
+        /*
+           Don't force 380px on tablet.
+        */
+        width: min(380px, calc(100vw - 100px));
+
+        max-width: 380px;
+
+        height: 520px;
+    }
+
+
+    .chatbot-toggle {
+        right: 15px;
+
+        bottom: 15px;
+    }
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 600px) {
+
+    .chatbot-window {
+        /*
+           On mobile, sidebar is still 70px
+           but chatbot needs almost full screen.
+        */
+        left: 10px;
+
+        right: 10px;
+
+        bottom: 85px;
+
+        width: auto;
+
+        height: 70vh;
+
+        max-height: 600px;
+
+        border-radius: 16px;
+    }
+
+
+    .chatbot-toggle {
+        right: 15px;
+
+        bottom: 15px;
+
+        width: 55px;
+
+        height: 55px;
+
+        font-size: 22px;
+    }
+
+
+    .chatbot-header {
+        height: 65px;
+
+        min-height: 65px;
+
+        padding: 0 14px;
+    }
+
+
+    .chatbot-title h3 {
+        font-size: 14px;
+    }
+
+
+    .chatbot-messages {
+        padding: 14px;
+
+        gap: 12px;
+    }
+
+
+    .message {
+        max-width: 92%;
+    }
+
+
+    .message-content {
+        font-size: 13px;
+    }
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 400px) {
+
+    .chatbot-window {
+        left: 5px;
+
+        right: 5px;
+
+        bottom: 75px;
+
+        height: calc(100vh - 100px);
+
+        max-height: none;
+
+        border-radius: 14px;
+    }
+
+
+    .chatbot-toggle {
+        width: 52px;
+
+        height: 52px;
+
+        right: 12px;
+
+        bottom: 12px;
+    }
+
+
+    .chatbot-icon {
+        width: 36px;
+        height: 36px;
+
+        min-width: 36px;
+
+        font-size: 17px;
+    }
+
+
+    .chatbot-close {
+        width: 32px;
+        height: 32px;
+
+        min-width: 32px;
+    }
+}
