@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -379,6 +380,51 @@
 
 
                 </div>
+
+
+                <!-- ================================================= -->
+                <!-- ORDER STATUS CHART -->
+                <!-- ================================================= -->
+
+                <div class="chart-container glass-panel"
+                     style="
+                        margin-top:25px;
+                        padding:25px;
+                     ">
+
+                    <div style="
+                        margin-bottom:20px;
+                    ">
+
+                        <h2>
+                            Order Status Overview
+                        </h2>
+
+                        <p style="
+                            font-size:14px;
+                            opacity:0.75;
+                            margin-top:5px;
+                        ">
+
+                            Current distribution of restaurant orders
+
+                        </p>
+
+                    </div>
+
+
+                    <div style="
+                        height:350px;
+                        position:relative;
+                        width:100%;
+                    ">
+
+                        <canvas id="orderStatusChart"></canvas>
+
+                    </div>
+
+                </div>
+
 
             </section>
 
@@ -867,10 +913,6 @@
                 <div class="split-layout">
 
 
-                    <!-- ========================================= -->
-                    <!-- RESERVATION UPDATE FORM -->
-                    <!-- ========================================= -->
-
                     <div class="form-panel glass-panel">
 
                         <h2>
@@ -893,8 +935,6 @@
                         <form id="form-reservation">
 
 
-                            <!-- RESERVATION ID -->
-
                             <div class="form-group">
 
                                 <label>
@@ -909,8 +949,6 @@
 
                             </div>
 
-
-                            <!-- CUSTOMER -->
 
                             <div class="form-group">
 
@@ -930,8 +968,6 @@
                             </div>
 
 
-                            <!-- DINING TABLE -->
-
                             <div class="form-group">
 
                                 <label>
@@ -950,8 +986,6 @@
                             </div>
 
 
-                            <!-- DATE & TIME -->
-
                             <div class="form-group">
 
                                 <label>
@@ -964,8 +998,6 @@
 
                             </div>
 
-
-                            <!-- STATUS -->
 
                             <div class="form-group">
 
@@ -996,8 +1028,6 @@
 
                             </div>
 
-
-                            <!-- BUTTONS -->
 
                             <div class="form-actions">
 
@@ -1031,10 +1061,6 @@
                     </div>
 
 
-
-                    <!-- ========================================= -->
-                    <!-- RESERVATION LIST -->
-                    <!-- ========================================= -->
 
                     <div class="table-panel glass-panel">
 
@@ -1149,7 +1175,6 @@
                                     Order Status
                                 </th>
 
-
                             </tr>
 
                         </thead>
@@ -1235,19 +1260,19 @@
 
                                 <div class="form-group">
 
-    <label>
-        Supplier
-    </label>
+                                    <label>
+                                        Supplier
+                                    </label>
 
-    <select id="ing-supplier">
+                                    <select id="ing-supplier">
 
-        <option value="">
-            Select Supplier
-        </option>
+                                        <option value="">
+                                            Select Supplier
+                                        </option>
 
-    </select>
+                                    </select>
 
-</div>
+                                </div>
 
                                 <input
                                     type="text"
@@ -1285,15 +1310,25 @@
                         <table class="custom-table">
 
                             <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Quantity</th>
-        <th>Unit</th>
-        <th>Supplier</th>
-        <th>Actions</th>
-    </tr>
-</thead>
+
+                                <tr>
+
+                                    <th>ID</th>
+
+                                    <th>Name</th>
+
+                                    <th>Quantity</th>
+
+                                    <th>Unit</th>
+
+                                    <th>Supplier</th>
+
+                                    <th>Actions</th>
+
+                                </tr>
+
+                            </thead>
+
                             <tbody id="table-ingredient"></tbody>
 
                         </table>
@@ -1715,8 +1750,16 @@
 </div>
 
 
+
 <!-- ===================================================== -->
-<!-- JAVASCRIPT -->
+<!-- CHART.JS -->
+<!-- ===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<!-- ===================================================== -->
+<!-- ADMIN DASHBOARD JAVASCRIPT -->
 <!-- ===================================================== -->
 
 <script src="js/admin_dashbord.js"></script>
@@ -1724,3 +1767,4 @@
 </body>
 
 </html>
+```

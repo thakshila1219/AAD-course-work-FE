@@ -3,6 +3,7 @@
 // Backend: Spring Boot REST API
 // ============================================================
 
+
 const BASE_URL = "http://localhost:8082";
 
 
@@ -5986,4 +5987,34 @@ async function loginUser(
 
     }
 
+}
+
+// ===============================
+// ORDER STATUS CHART
+// ===============================
+
+console.log("Chart.js =", typeof Chart);
+
+const canvas = document.getElementById("orderStatusChart");
+
+if (canvas && typeof Chart !== "undefined") {
+
+    new Chart(canvas, {
+        type: "pie",
+
+        data: {
+            labels: ["Pending", "Confirmed", "Completed", "Cancelled"],
+            datasets: [{
+                data: [10, 20, 15, 5]
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+} else {
+    console.error("Chart.js or canvas not found");
 }
